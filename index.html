@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Novo App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Arcade - KOF</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>🎮 Mini Arcade</h1>
+
+<input type="file" id="romInput">
+<button onclick="carregarROM()">▶️ Jogar</button>
+
+<canvas id="gameCanvas"></canvas>
+
+<div class="controls">
+  <button onclick="sendKey('UP')">↑</button><br>
+  <button onclick="sendKey('LEFT')">←</button>
+  <button onclick="sendKey('DOWN')">↓</button>
+  <button onclick="sendKey('RIGHT')">→</button><br><br>
+
+  <button onclick="sendKey('A')">A</button>
+  <button onclick="sendKey('B')">B</button>
+  <button onclick="sendKey('C')">C</button>
+  <button onclick="sendKey('D')">D</button>
+</div>
+
+<script src="emulator/emulator.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
+<script src="script.js"></script>
+</body>
+</html>
