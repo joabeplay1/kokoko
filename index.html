@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>SPACE CAT PONG 🐱🌌</title>
+<title>SPACE CAT GALAXY 🐱🌌</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,9 +14,9 @@
     z-index: 10; pointer-events: none;
   }
   .score-box {
-    background: rgba(5, 10, 25, 0.85); padding: 15px 40px; border-radius: 15px;
-    border: 2px solid #00f2ff; display: flex; gap: 30px; align-items: center;
-    box-shadow: 0 0 25px rgba(0, 242, 255, 0.4); backdrop-filter: blur(5px);
+    background: rgba(5, 10, 25, 0.7); padding: 15px 40px; border-radius: 15px;
+    border: 1px solid rgba(0, 242, 255, 0.3); display: flex; gap: 30px; align-items: center;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px);
   }
   .score { font-size: 40px; color: #fff; text-shadow: 0 0 15px #00f2ff; }
   
@@ -37,16 +37,16 @@
 <body>
 
 <div id="menu">
-  <h1 style="color: #fff; font-size: clamp(40px, 8vw, 70px); text-align: center; line-height: 1;">
-    SPACE CAT<br><span style="color: #b200ff; filter: drop-shadow(0 0 10px #b200ff);">GALAXY PONG</span>
+  <h1 style="color: #fff; font-size: clamp(40px, 8vw, 70px); text-align: center;">
+    SPACE CAT<br><span style="color: #b200ff;">GALAXY</span>
   </h1>
-  <button class="btn" onclick="startGame()">ENTRAR NO HIPERESPAÇO</button>
+  <button class="btn" onclick="startGame()">INICIAR VIAGEM</button>
 </div>
 
 <div id="hud" style="display:none">
   <div class="score-box">
     <div id="p1-score" class="score">0</div>
-    <div style="color: #666; font-size: 20px;">VS</div>
+    <div style="color: #666; font-size: 18px;">X</div>
     <div id="p2-score" class="score">0</div>
   </div>
 </div>
@@ -60,14 +60,12 @@ const ctx = canvas.getContext('2d');
 let gameRunning = false;
 let p1Score = 0, p2Score = 0;
 
-// Configurações visuais
 const paddleW = 35, paddleH = 110;
-const goalSize = 200; 
-const player = { x: 60, y: 0, color: '#00f2ff' };
+const goalSize = 220; 
+const player = { x: 70, y: 0, color: '#00f2ff' };
 const ai = { x: 0, y: 0, color: '#b200ff' };
-const ball = { x: 0, y: 0, vx: 8, vy: 8, radius: 15 };
+const ball = { x: 0, y: 0, vx: 8, vy: 8 };
 
-// Elementos do Universo
 let stars = [];
 let galaxyParticles = [];
 
@@ -76,29 +74,23 @@ function init() {
   canvas.height = window.innerHeight;
   player.y = canvas.height / 2 - paddleH / 2;
   ai.y = canvas.height / 2 - paddleH / 2;
-  ai.x = canvas.width - 60 - paddleW;
+  ai.x = canvas.width - 70 - paddleW;
   
-  // Criar estrelas de fundo
+  // Estrelas de fundo
   stars = [];
-  for(let i=0; i<200; i++) {
-    stars.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      size: Math.random() * 2,
-      speed: Math.random() * 0.5,
-      opacity: Math.random()
-    });
+  for(let i=0; i<150; i++) {
+    stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, s: Math.random()*2, o: Math.random() });
   }
 
-  // Criar partículas da Galáxia
+  // Partículas da Galáxia (Espiral realística)
   galaxyParticles = [];
-  for(let i=0; i<150; i++) {
+  for(let i=0; i<400; i++) {
     galaxyParticles.push({
       angle: Math.random() * Math.PI * 2,
-      radius: Math.random() * 120,
-      speed: 0.01 + Math.random() * 0.02,
-      color: Math.random() > 0.5 ? '#00f2ff' : '#b200ff',
-      pSize: Math.random() * 3
+      distance: Math.random() * 150,
+      speed: 0.005 + Math.random() * 0.01,
+      size: Math.random() * 2.5,
+      color: i % 3 === 0 ? '#b200ff' : (i % 3 === 1 ? '#00f2ff' : '#ffffff')
     });
   }
   resetBall();
@@ -111,169 +103,115 @@ function resetBall() {
   ball.vy = 6 * (Math.random() > 0.5 ? 1 : -1);
 }
 
-function drawBackground() {
-  // Fundo degradê profundo
-  const bgGrad = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, canvas.width);
-  bgGrad.addColorStop(0, '#0a1228');
-  bgGrad.addColorStop(1, '#02040a');
-  ctx.fillStyle = bgGrad;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Estrelas animadas
-  stars.forEach(s => {
-    ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-    ctx.fill();
-    s.x -= s.speed; // Movimento sutil para a esquerda
-    if(s.x < 0) s.x = canvas.width;
-  });
-}
-
 function drawGalaxy() {
   ctx.save();
   ctx.translate(canvas.width / 2, canvas.height / 2);
   
-  // Brilho central
-  const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, 80);
-  glow.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
-  glow.addColorStop(0.4, 'rgba(178, 0, 255, 0.3)');
-  glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-  ctx.fillStyle = glow;
-  ctx.beginPath();
-  ctx.arc(0, 0, 80, 0, Math.PI*2);
-  ctx.fill();
+  // Núcleo brilhante (sem linhas)
+  const core = ctx.createRadialGradient(0, 0, 0, 0, 0, 60);
+  core.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+  core.addColorStop(0.3, 'rgba(0, 242, 255, 0.4)');
+  core.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = core;
+  ctx.beginPath(); ctx.arc(0, 0, 60, 0, Math.PI*2); ctx.fill();
 
-  // Partículas giratórias
-  galaxyParticles.forEach(p => {
+  // Partículas girando em espiral
+  galaxyParticles.forEach((p, i) => {
     p.angle += p.speed;
-    const x = Math.cos(p.angle) * p.radius;
-    const y = Math.sin(p.angle) * (p.radius * 0.6); // Galáxia inclinada
+    const spiral = p.distance + (p.angle * 5); // Cria o efeito de braços da galáxia
+    const x = Math.cos(p.angle) * p.distance;
+    const y = Math.sin(p.angle) * (p.distance * 0.5); // Inclinação 3D
+    
     ctx.fillStyle = p.color;
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = p.color;
+    ctx.globalAlpha = 0.6;
     ctx.beginPath();
-    ctx.arc(x, y, p.pSize, 0, Math.PI * 2);
+    ctx.arc(x, y, p.size, 0, Math.PI * 2);
     ctx.fill();
   });
   ctx.restore();
+  ctx.globalAlpha = 1.0;
 }
 
 function drawCat(x, y, color) {
   ctx.save();
-  ctx.shadowBlur = 20;
-  ctx.shadowColor = color;
+  ctx.shadowBlur = 20; ctx.shadowColor = color;
   ctx.fillStyle = color;
-  
-  // Corpo pílula neon
+  // Corpo
+  ctx.beginPath(); ctx.roundRect(x, y, paddleW, paddleH, 18); ctx.fill();
+  // Orelhas
   ctx.beginPath();
-  ctx.roundRect(x, y, paddleW, paddleH, 18);
-  ctx.fill();
-  
-  // Orelhas pontudas
-  ctx.beginPath();
-  ctx.moveTo(x + 5, y);
-  ctx.lineTo(x + 12, y - 12);
-  ctx.lineTo(x + 20, y);
-  ctx.fill();
-  
-  ctx.beginPath();
-  ctx.moveTo(x + paddleW - 5, y);
-  ctx.lineTo(x + paddleW - 12, y - 12);
-  ctx.lineTo(x + paddleW - 20, y);
-  ctx.fill();
-
-  // Detalhes da face
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
-  ctx.beginPath();
-  ctx.arc(x + 10, y + 25, 3.5, 0, Math.PI * 2);
-  ctx.arc(x + paddleW - 10, y + 25, 3.5, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.moveTo(x+5, y); ctx.lineTo(x+12, y-12); ctx.lineTo(x+20, y); ctx.fill();
+  ctx.moveTo(x+paddleW-5, y); ctx.lineTo(x+paddleW-12, y-12); ctx.lineTo(x+paddleW-20, y); ctx.fill();
+  // Olhos
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.beginPath(); ctx.arc(x+10, y+25, 3.5, 0, Math.PI*2); ctx.arc(x+paddleW-10, y+25, 3.5, 0, Math.PI*2); ctx.fill();
   ctx.restore();
 }
 
 function drawBall() {
-  // Rastro da estrela
   ctx.save();
-  ctx.shadowBlur = 25;
-  ctx.shadowColor = '#00f2ff';
-  
-  // Desenho da Estrela
-  let rot = Math.PI / 2 * 3;
-  let step = Math.PI / 5;
-  ctx.beginPath();
-  ctx.moveTo(ball.x, ball.y - 18);
+  ctx.shadowBlur = 20; ctx.shadowColor = '#00f2ff';
+  // Estrela
+  let rot = Math.PI / 2 * 3; let step = Math.PI / 5;
+  ctx.beginPath(); ctx.moveTo(ball.x, ball.y - 18);
   for (let i = 0; i < 5; i++) {
-    ctx.lineTo(ball.x + Math.cos(rot) * 18, ball.y + Math.sin(rot) * 18);
-    rot += step;
-    ctx.lineTo(ball.x + Math.cos(rot) * 8, ball.y + Math.sin(rot) * 8);
-    rot += step;
+    ctx.lineTo(ball.x + Math.cos(rot)*18, ball.y + Math.sin(rot)*18); rot += step;
+    ctx.lineTo(ball.x + Math.cos(rot)*8, ball.y + Math.sin(rot)*8); rot += step;
   }
-  ctx.fillStyle = "#fff";
-  ctx.fill();
+  ctx.fillStyle = "#fff"; ctx.fill();
   ctx.restore();
 }
 
 function update() {
   if (!gameRunning) return;
-
-  ball.x += ball.vx;
-  ball.y += ball.vy;
+  ball.x += ball.vx; ball.y += ball.vy;
 
   if (ball.y < 0 || ball.y > canvas.height) ball.vy *= -1;
 
-  const goalTop = (canvas.height / 2) - (goalSize / 2);
-  const goalBottom = (canvas.height / 2) + (goalSize / 2);
+  const goalT = (canvas.height/2) - (goalSize/2);
+  const goalB = (canvas.height/2) + (goalSize/2);
 
-  // Colisão com laterais e Gols
-  if (ball.x < 25) {
-    if (ball.y > goalTop && ball.y < goalBottom) {
-      p2Score++; resetBall();
-    } else { ball.vx *= -1; ball.x = 25; }
+  if (ball.x < 20) {
+    if (ball.y > goalT && ball.y < goalB) { p2Score++; resetBall(); }
+    else { ball.vx *= -1; ball.x = 20; }
   }
-  if (ball.x > canvas.width - 25) {
-    if (ball.y > goalTop && ball.y < goalBottom) {
-      p1Score++; resetBall();
-    } else { ball.vx *= -1; ball.x = canvas.width - 25; }
+  if (ball.x > canvas.width - 20) {
+    if (ball.y > goalT && ball.y < goalB) { p1Score++; resetBall(); }
+    else { ball.vx *= -1; ball.x = canvas.width - 20; }
   }
 
   // Colisão Raquetes
   if (ball.vx < 0 && ball.x < player.x + paddleW && ball.y > player.y && ball.y < player.y + paddleH) {
     ball.vx *= -1.1; ball.x = player.x + paddleW;
   }
-  if (ball.vx > 0 && ball.x > ai.x - ball.radius && ball.y > ai.y && ball.y < ai.y + paddleH) {
-    ball.vx *= -1.1; ball.x = ai.x - ball.radius;
+  if (ball.vx > 0 && ball.x > ai.x && ball.y > ai.y && ball.y < ai.y + paddleH) {
+    ball.vx *= -1.1; ball.x = ai.x;
   }
 
-  // Movimento IA (Suave)
-  const aiCenter = ai.y + (paddleH / 2);
-  if (aiCenter < ball.y - 30) ai.y += 7;
-  else if (aiCenter > ball.y + 30) ai.y -= 7;
+  // IA
+  const aiC = ai.y + (paddleH / 2);
+  if (aiC < ball.y - 30) ai.y += 7; else if (aiC > ball.y + 30) ai.y -= 7;
 
   document.getElementById('p1-score').innerText = p1Score;
   document.getElementById('p2-score').innerText = p2Score;
 }
 
 function draw() {
-  drawBackground();
+  ctx.fillStyle = '#02040a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // Estrelas de fundo
+  stars.forEach(s => { ctx.fillStyle = `rgba(255,255,255,${s.o})`; ctx.fillRect(s.x, s.y, s.s, s.s); });
+
   drawGalaxy();
 
-  // Gols Laterais Neon
-  ctx.lineWidth = 6;
-  const goalTop = (canvas.height / 2) - (goalSize / 2);
-  const goalBottom = (canvas.height / 2) + (goalSize / 2);
-
+  // Gols Laterais (Linhas finas apenas onde rebate)
+  ctx.lineWidth = 4;
+  const goalT = (canvas.height/2) - (goalSize/2);
+  const goalB = (canvas.height/2) + (goalSize/2);
   ctx.strokeStyle = '#00f2ff';
-  ctx.beginPath();
-  ctx.moveTo(15, 0); ctx.lineTo(15, goalTop);
-  ctx.moveTo(15, goalBottom); ctx.lineTo(15, canvas.height);
-  ctx.stroke();
-
+  ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(10, goalT); ctx.moveTo(10, goalB); ctx.lineTo(10, canvas.height); ctx.stroke();
   ctx.strokeStyle = '#b200ff';
-  ctx.beginPath();
-  ctx.moveTo(canvas.width - 15, 0); ctx.lineTo(canvas.width - 15, goalTop);
-  ctx.moveTo(canvas.width - 15, goalBottom); ctx.lineTo(canvas.width - 15, canvas.height);
-  ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(canvas.width-10, 0); ctx.lineTo(canvas.width-10, goalT); ctx.moveTo(canvas.width-10, goalB); ctx.lineTo(canvas.width-10, canvas.height); ctx.stroke();
 
   drawCat(player.x, player.y, player.color);
   drawCat(ai.x, ai.y, ai.color);
@@ -286,20 +224,11 @@ function draw() {
 function startGame() {
   document.getElementById('menu').style.display = 'none';
   document.getElementById('hud').style.display = 'flex';
-  gameRunning = true;
-  init();
-  draw();
+  gameRunning = true; init(); draw();
 }
 
-window.addEventListener('mousemove', (e) => {
-  player.y = e.clientY - (paddleH / 2);
-});
-
-window.addEventListener('touchmove', (e) => {
-  e.preventDefault();
-  player.y = e.touches[0].clientY - (paddleH / 2);
-}, {passive: false});
-
+window.addEventListener('mousemove', (e) => { player.y = e.clientY - (paddleH / 2); });
+window.addEventListener('touchmove', (e) => { e.preventDefault(); player.y = e.touches[0].clientY - (paddleH / 2); }, {passive: false});
 window.addEventListener('resize', init);
 </script>
 </body>
