@@ -3,157 +3,129 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>PING PONG — Space Cat Edition 🐱⭐</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+<title>SPACE CAT PONG 🐱⭐</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { width: 100%; height: 100%; overflow: hidden; background: #02040a; font-family: 'Inter', sans-serif; }
-
-  /* MENU */
-  #menu {
-    position: fixed; inset: 0; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    background: radial-gradient(circleAt center, #0a1228 0%, #02040a 100%); z-index: 10; gap: 12px;
-  }
-  #menu .title {
-    font-family: 'Orbitron', sans-serif; font-size: clamp(2.5rem, 8vw, 5rem);
-    font-weight: 900; margin-bottom: 8px;
-    background: linear-gradient(135deg, #00f2ff 0%, #b200ff 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    filter: drop-shadow(0 0 20px rgba(0,242,255,0.4));
-  }
-  #menu .subtitle {
-    font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase;
-    color: rgba(255,255,255,0.4); margin-bottom: 32px;
-  }
-  .menu-btn {
-    display: flex; align-items: center; gap: 14px;
-    width: min(340px, 90vw); padding: 18px 22px; border-radius: 16px;
-    background: rgba(15,20,45,0.6); border: 1px solid rgba(255,255,255,0.08);
-    color: #fff; cursor: pointer; transition: all 0.2s; text-align: left;
-    backdrop-filter: blur(20px); font-family: inherit;
-  }
-  .menu-btn:hover { transform: translateY(-2px) scale(1.02); border-color: #00f2ff; }
-
-  /* GAME */
-  #game { display: none; position: fixed; inset: 0; }
-  #game.visible { display: block; }
-  canvas { display: block; width: 100%; height: 100%; }
-
-  /* HUD */
+  body { width: 100vw; height: 100vh; overflow: hidden; background: #02040a; font-family: 'Orbitron', sans-serif; }
+  
   #hud {
-    position: fixed; top: 0; left: 0; right: 0;
-    display: flex; justify-content: center; padding: 12px; z-index: 20; pointer-events: none;
+    position: fixed; top: 20px; width: 100%; display: flex; justify-content: center;
+    z-index: 10; pointer-events: none;
   }
   .score-box {
-    display: flex; align-items: center; gap: 20px; padding: 10px 28px; border-radius: 18px;
-    background: rgba(5,8,20,0.7); backdrop-filter: blur(16px);
-    border: 1px solid rgba(0,242,255,0.2);
+    background: rgba(10, 15, 30, 0.8); padding: 15px 40px; border-radius: 15px;
+    border: 2px solid #00f2ff; display: flex; gap: 30px; align-items: center;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
   }
-  .score-num { font-family: 'Orbitron', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; color: #fff; }
-
-  #controls { position: fixed; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 20; }
-  .ctrl-btn {
-    width: 38px; height: 38px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(10,15,30,0.7); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  .score { font-size: 40px; color: #fff; text-shadow: 0 0 10px #00f2ff; }
+  
+  #menu {
+    position: fixed; inset: 0; background: rgba(2, 4, 10, 0.95);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100;
   }
-
-  .overlay {
-    position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
-    z-index: 30; background: rgba(5,8,20,0.85); backdrop-filter: blur(8px);
+  .btn {
+    padding: 20px 40px; font-family: inherit; font-size: 20px; cursor: pointer;
+    background: transparent; color: #00f2ff; border: 2px solid #00f2ff;
+    border-radius: 10px; transition: 0.3s; margin-top: 20px;
   }
-  .overlay.visible { display: flex; }
-  .overlay-box { text-align: center; padding: 40px; border-radius: 24px; background: #0c1228; border: 1px solid #00f2ff; color: #fff;}
+  .btn:hover { background: #00f2ff; color: #000; box-shadow: 0 0 30px #00f2ff; }
+  
+  canvas { display: block; }
 </style>
 </head>
 <body>
 
 <div id="menu">
-  <canvas id="bg-canvas" style="position:fixed;inset:0;pointer-events:none;z-index:0"></canvas>
-  <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center">
-    <div class="title">CINE PONG</div>
-    <div class="subtitle">⭐ Space Cat Edition ⭐</div>
-
-    <div id="mode-btns">
-      <button class="menu-btn" onclick="startGame('1p','medium')">
-        <div style="font-size:24px">🐱</div>
-        <div><div style="font-weight:700">SOLO</div><div style="font-size:11px;opacity:0.6">Desafie a IA Galáctica</div></div>
-      </button>
-      <button class="menu-btn" onclick="startGame('2p','medium')" style="margin-top:12px">
-        <div style="font-size:24px">🐾</div>
-        <div><div style="font-weight:700">DUO</div><div style="font-size:11px;opacity:0.6">Batalha de Gatinhos</div></div>
-      </button>
-    </div>
-  </div>
-</div>
-
-<div id="game">
-  <canvas id="game-canvas"></canvas>
+  <h1 style="color: #fff; font-size: 60px; text-align: center;">SPACE CAT<br><span style="color: #b200ff;">PONG</span></h1>
+  <button class="btn" onclick="startGame()">INICIAR BATALHA</button>
 </div>
 
 <div id="hud" style="display:none">
   <div class="score-box">
-    <div id="score-p1" class="score-num">0</div>
-    <div style="color:rgba(255,255,255,0.2);font-family:'Orbitron'">VS</div>
-    <div id="score-p2" class="score-num">0</div>
+    <div id="p1-score" class="score">0</div>
+    <div style="color: #666;">VS</div>
+    <div id="p2-score" class="score">0</div>
   </div>
 </div>
 
-<div id="controls" style="display:none">
-  <button class="ctrl-btn" onclick="togglePause()">⏸</button>
-  <button class="ctrl-btn" onclick="quitGame()">🏠</button>
-</div>
-
-<div class="overlay" id="winner-overlay">
-  <div class="overlay-box">
-    <h2 id="winner-name" style="font-family:'Orbitron';font-size:2rem">VITÓRIA!</h2>
-    <p id="winner-score" style="margin:20px 0"></p>
-    <button onclick="quitGame()" style="padding:10px 20px; cursor:pointer; font-family:'Orbitron'">VOLTAR AO MENU</button>
-  </div>
-</div>
+<canvas id="gameCanvas"></canvas>
 
 <script>
-// IMAGENS DOS GATINHOS
-const catLeft = new Image();
-catLeft.src = 'https://i.imgur.com/vAr98t8.png'; // Gatinho 1
-const catRight = new Image();
-catRight.src = 'https://i.imgur.com/u7XwRAn.png'; // Gatinho 2
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
 
-let gs = null, gameRunning = false, isPaused = false;
-let animFrame = null, keys = {};
+let gameRunning = false;
+let p1Score = 0;
+let p2Score = 0;
 
-function initGame() {
-  const canvas = document.getElementById('game-canvas');
+// Configurações
+const paddleW = 30;
+const paddleH = 100;
+const goalSize = 180; // Tamanho do "buraco" do gol
+
+const player = { x: 50, y: 0, color: '#00f2ff' };
+const ai = { x: 0, y: 0, color: '#b200ff' };
+const ball = { x: 0, y: 0, vx: 7, vy: 7, radius: 15 };
+
+function init() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  const W = canvas.width, H = canvas.height;
-  
-  gs = {
-    W, H,
-    paddleW: 60, // Tamanho ajustado para a imagem do gato
-    paddleH: 80,
-    ballR: 25,
-    p1: { y: H/2 - 40, score: 0 },
-    p2: { y: H/2 - 40, score: 0 },
-    ball: { x: W/2, y: H/2, vx: 6, vy: 4 },
-    stars: Array.from({length: 100}, () => ({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      size: Math.random() * 2,
-      opacity: Math.random()
-    }))
-  };
+  player.y = canvas.height / 2 - paddleH / 2;
+  ai.y = canvas.height / 2 - paddleH / 2;
+  ai.x = canvas.width - 50 - paddleW;
+  resetBall();
 }
 
-// FUNÇÃO PARA DESENHAR ESTRELA (BOLA)
-function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius) {
+function resetBall() {
+  ball.x = canvas.width / 2;
+  ball.y = canvas.height / 2;
+  ball.vx = 7 * (Math.random() > 0.5 ? 1 : -1);
+  ball.vy = 5 * (Math.random() > 0.5 ? 1 : -1);
+}
+
+// Desenha gatinho (Paddle)
+function drawCat(x, y, color) {
+  ctx.save();
+  ctx.shadowBlur = 15;
+  ctx.shadowColor = color;
+  ctx.fillStyle = color;
+  
+  // Corpo (pílula)
+  ctx.beginPath();
+  ctx.roundRect(x, y, paddleW, paddleH, 15);
+  ctx.fill();
+  
+  // Orelhas
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x + 10, y - 10);
+  ctx.lineTo(x + 20, y);
+  ctx.fill();
+  
+  ctx.beginPath();
+  ctx.moveTo(x + paddleW, y);
+  ctx.lineTo(x + paddleW - 10, y - 10);
+  ctx.lineTo(x + paddleW - 20, y);
+  ctx.fill();
+  
+  // Olhos
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.arc(x + 10, y + 25, 3, 0, Math.PI * 2);
+  ctx.arc(x + paddleW - 10, y + 25, 3, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawStar(cx, cy, spikes, outerRadius, innerRadius) {
   let rot = Math.PI / 2 * 3;
   let x = cx;
   let y = cy;
   let step = Math.PI / spikes;
 
   ctx.beginPath();
-  ctx.moveTo(cx, cy - outerRadius)
+  ctx.moveTo(cx, cy - outerRadius);
   for (let i = 0; i < spikes; i++) {
     x = cx + Math.cos(rot) * outerRadius;
     y = cy + Math.sin(rot) * outerRadius;
@@ -173,112 +145,129 @@ function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius) {
   ctx.shadowBlur = 0;
 }
 
-function update() {
-  if (isPaused || !gs) return;
-  
-  // Movimento da bola
-  gs.ball.x += gs.ball.vx;
-  gs.ball.y += gs.ball.vy;
-
-  // Colisão teto/chão
-  if (gs.ball.y <= 0 || gs.ball.y >= gs.H) gs.ball.vy *= -1;
-
-  // Controle P1 (Gato Esquerdo)
-  if (keys['w'] && gs.p1.y > 0) gs.p1.y -= 8;
-  if (keys['s'] && gs.p1.y < gs.H - gs.paddleH) gs.p1.y += 8;
-
-  // IA Simples para P2 (Gato Direito)
-  let target = gs.ball.y - gs.paddleH/2;
-  if (gs.p2.y < target) gs.p2.y += 5;
-  else gs.p2.y -= 5;
-
-  // Colisões com Raquetes (Gatinhos)
-  if (gs.ball.vx < 0 && gs.ball.x < 80 && gs.ball.y > gs.p1.y && gs.ball.y < gs.p1.y + gs.paddleH) {
-    gs.ball.vx *= -1.1;
+function drawGalaxy() {
+  const time = Date.now() * 0.002;
+  ctx.save();
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  ctx.rotate(time * 0.2);
+  for (let i = 0; i < 50; i++) {
+    const angle = i * 0.5;
+    const dist = i * 4;
+    const x = Math.cos(angle) * dist;
+    const y = Math.sin(angle) * dist;
+    ctx.fillStyle = i % 2 === 0 ? '#b200ff' : '#00f2ff';
+    ctx.beginPath();
+    ctx.arc(x, y, 2, 0, Math.PI * 2);
+    ctx.fill();
   }
-  if (gs.ball.vx > 0 && gs.ball.x > gs.W - 80 && gs.ball.y > gs.p2.y && gs.ball.y < gs.p2.y + gs.paddleH) {
-    gs.ball.vx *= -1.1;
-  }
-
-  // Pontuação
-  if (gs.ball.x < 0) { gs.p2.score++; resetBall(); }
-  if (gs.ball.x > gs.W) { gs.p1.score++; resetBall(); }
-  
-  document.getElementById('score-p1').textContent = gs.p1.score;
-  document.getElementById('score-p2').textContent = gs.p2.score;
-
-  if (gs.p1.score >= 7 || gs.p2.score >= 7) {
-    gameRunning = false;
-    document.getElementById('winner-overlay').classList.add('visible');
-    document.getElementById('winner-score').textContent = `${gs.p1.score} - ${gs.p2.score}`;
-  }
+  ctx.restore();
 }
 
-function resetBall() {
-  gs.ball.x = gs.W/2;
-  gs.ball.y = gs.H/2;
-  gs.ball.vx = 6 * (Math.random() > 0.5 ? 1 : -1);
+function update() {
+  if (!gameRunning) return;
+
+  ball.x += ball.vx;
+  ball.y += ball.vy;
+
+  // Colisão teto/chão
+  if (ball.y < 0 || ball.y > canvas.height) ball.vy *= -1;
+
+  // Lógica de Gol (Buraco retangular)
+  const goalTop = (canvas.height / 2) - (goalSize / 2);
+  const goalBottom = (canvas.height / 2) + (goalSize / 2);
+
+  // Linha da esquerda
+  if (ball.x < 20) {
+    if (ball.y > goalTop && ball.y < goalBottom) {
+      p2Score++;
+      resetBall();
+    } else {
+      ball.vx *= -1;
+      ball.x = 20;
+    }
+  }
+
+  // Linha da direita
+  if (ball.x > canvas.width - 20) {
+    if (ball.y > goalTop && ball.y < goalBottom) {
+      p1Score++;
+      resetBall();
+    } else {
+      ball.vx *= -1;
+      ball.x = canvas.width - 20;
+    }
+  }
+
+  // Colisão Raquetes
+  if (ball.vx < 0 && ball.x < player.x + paddleW && ball.y > player.y && ball.y < player.y + paddleH) {
+    ball.vx *= -1.1;
+    ball.x = player.x + paddleW;
+  }
+  if (ball.vx > 0 && ball.x > ai.x - ball.radius && ball.y > ai.y && ball.y < ai.y + paddleH) {
+    ball.vx *= -1.1;
+    ball.x = ai.x - ball.radius;
+  }
+
+  // Movimento IA
+  const aiCenter = ai.y + (paddleH / 2);
+  if (aiCenter < ball.y - 35) ai.y += 6;
+  else if (aiCenter > ball.y + 35) ai.y -= 6;
+
+  document.getElementById('p1-score').innerText = p1Score;
+  document.getElementById('p2-score').innerText = p2Score;
 }
 
 function draw() {
-  const canvas = document.getElementById('game-canvas');
-  const ctx = canvas.getContext('2d');
-  const {W, H} = gs;
-
-  // Fundo Espacial
   ctx.fillStyle = '#02040a';
-  ctx.fillRect(0, 0, W, H);
-  
-  gs.stars.forEach(s => {
-    ctx.fillStyle = `rgba(255,255,255,${s.opacity})`;
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
-    ctx.fill();
-  });
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Linha Central Neon
-  ctx.strokeStyle = 'rgba(0,242,255,0.2)';
-  ctx.setLineDash([10, 10]);
-  ctx.beginPath(); ctx.moveTo(W/2, 0); ctx.lineTo(W/2, H); ctx.stroke();
-  ctx.setLineDash([]);
+  drawGalaxy();
 
-  // Desenhar Gatinhos
-  ctx.drawImage(catLeft, 20, gs.p1.y, gs.paddleW, gs.paddleH);
-  ctx.drawImage(catRight, W - 80, gs.p2.y, gs.paddleW, gs.paddleH);
+  // Desenhar bordas com buraco (Gols)
+  ctx.strokeStyle = '#00f2ff';
+  ctx.lineWidth = 4;
+  const goalTop = (canvas.height / 2) - (goalSize / 2);
+  const goalBottom = (canvas.height / 2) + (goalSize / 2);
 
-  // Desenhar Estrela (Bola)
-  drawStar(ctx, gs.ball.x, gs.ball.y, 5, 15, 7);
+  // Borda Esquerda (com buraco)
+  ctx.beginPath();
+  ctx.moveTo(10, 0); ctx.lineTo(10, goalTop);
+  ctx.moveTo(10, goalBottom); ctx.lineTo(10, canvas.height);
+  ctx.stroke();
+
+  // Borda Direita (com buraco)
+  ctx.strokeStyle = '#b200ff';
+  ctx.beginPath();
+  ctx.moveTo(canvas.width - 10, 0); ctx.lineTo(canvas.width - 10, goalTop);
+  ctx.moveTo(canvas.width - 10, goalBottom); ctx.lineTo(canvas.width - 10, canvas.height);
+  ctx.stroke();
+
+  drawCat(player.x, player.y, player.color);
+  drawCat(ai.x, ai.y, ai.color);
+  drawStar(ball.x, ball.y, 5, 15, 7);
+
+  update();
+  requestAnimationFrame(draw);
 }
 
-function loop() {
-  if (gameRunning) {
-    update();
-    draw();
-    animFrame = requestAnimationFrame(loop);
-  }
-}
-
-function startGame(m, diff) {
+function startGame() {
   document.getElementById('menu').style.display = 'none';
-  document.getElementById('game').classList.add('visible');
   document.getElementById('hud').style.display = 'flex';
-  document.getElementById('controls').style.display = 'flex';
   gameRunning = true;
-  initGame();
-  loop();
+  init();
+  draw();
 }
 
-function quitGame() {
-  gameRunning = false;
-  document.getElementById('menu').style.display = 'flex';
-  document.getElementById('game').classList.remove('visible');
-  document.getElementById('winner-overlay').classList.remove('visible');
-}
+// Controles
+window.addEventListener('mousemove', (e) => {
+  player.y = e.clientY - (paddleH / 2);
+});
 
-function togglePause() { isPaused = !isPaused; }
+window.addEventListener('touchmove', (e) => {
+  player.y = e.touches[0].clientY - (paddleH / 2);
+});
 
-document.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
-document.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+window.addEventListener('resize', init);
 </script>
 </body>
 </html>
