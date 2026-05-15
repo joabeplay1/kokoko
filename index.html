@@ -55,7 +55,7 @@
 
                 <div class="input-group">
                     <label><i class="fas fa-music"></i> Som do Alerta (PC)</label>
-                    <input type="file" id="event-sound" accept="audio/*" class="file-input-hidden">
+                    <input type="file" id="event-sound" accept="audio/*" style="display: none;">
                     <button type="button" class="btn-upload-local" onclick="document.getElementById('event-sound').click()">
                         <i class="fas fa-upload"></i> Escolher Música
                     </button>
@@ -63,7 +63,7 @@
 
                 <div class="input-group">
                     <label><i class="fas fa-image"></i> Capa da Notificação (PC)</label>
-                    <input type="file" id="event-image" accept="image/*" class="file-input-hidden">
+                    <input type="file" id="event-image" accept="image/*" style="display: none;">
                     <button type="button" class="btn-upload-local" onclick="document.getElementById('event-image').click()">
                         <i class="fas fa-camera"></i> Escolher Foto
                     </button>
@@ -71,7 +71,7 @@
 
                 <div class="input-group">
                     <label><i class="fab fa-google-drive"></i> Importar da Nuvem</label>
-                    <button type="button" id="btn-drive-cloud" class="btn-drive-separete" onclick="alert('Funcionalidade Google Drive ativa. Cole o link do arquivo no campo descrição para salvar permanentemente.')">
+                    <button type="button" class="btn-drive-separete" onclick="alert('Funcionalidade Drive Ativa. Use links externos na descrição para salvar permanentemente.')">
                         <i class="fab fa-google-drive"></i> Google Drive
                     </button>
                 </div>
