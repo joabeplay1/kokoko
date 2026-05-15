@@ -7,11 +7,34 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
 
-body { background-color: var(--bg-color); color: var(--text-primary); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Permite rolagem do topo */
+    min-height: 100vh;
+    overflow-y: auto;   /* LIBERA ROLAGEM PARA BAIXO */
+    overflow-x: auto;   /* LIBERA ROLAGEM PARA OS LADOS SE NECESSÁRIO */
+    padding: 20px 0;
+}
 
-#notification-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+#notification-canvas {
+    position: fixed; /* Mantém os sininhos no fundo mesmo ao rolar */
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: -1; pointer-events: none;
+}
 
-.app-container { width: 100%; max-width: 1200px; height: 95vh; background: transparent !important; display: flex; flex-direction: column; position: relative; z-index: 1; }
+.app-container {
+    width: 100%;
+    max-width: 1200px;
+    min-height: 95vh; /* Garante que o container cresça com o conteúdo */
+    background: transparent !important;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+}
 
 header { padding: 30px 40px; display: flex; justify-content: space-between; align-items: center; }
 
@@ -20,17 +43,16 @@ header { padding: 30px 40px; display: flex; justify-content: space-between; alig
 
 .btn-secondary { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; backdrop-filter: blur(5px); }
 
-#notification-area { flex: 1; padding: 30px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; align-content: start; }
+#notification-area { flex: 1; padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; align-content: start; }
 
-.notification { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-left: 5px solid var(--accent-color); padding: 20px; border-radius: 18px; animation: slideIn 0.5s ease; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+.notification { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-left: 5px solid var(--accent-color); padding: 20px; border-radius: 18px; animation: slideIn 0.5s ease; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin-bottom: 10px; }
 
 .notification-capa { width: 100%; height: 150px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
 
 @keyframes slideIn { from { opacity: 0; transform: scale(0.9) translateY(30px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-/* ESTILOS DO MENU LATERAL E BOTÕES DE UPLOAD */
-.file-input-hidden { display: none; }
-.btn-upload-local { width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; margin-top: 5px; }
+/* BOTÕES DE UPLOAD NO MENU */
+.btn-upload-local { width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 5px; transition: 0.3s; }
 .btn-upload-local:hover { background: rgba(255, 255, 255, 0.15); border-color: var(--accent-color); }
 
 .btn-drive-separete { width: 100%; padding: 12px; background: rgba(0, 210, 255, 0.1); border: 1px dashed var(--accent-color); color: var(--accent-color); border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 5px; }
@@ -42,17 +64,18 @@ header { padding: 30px 40px; display: flex; justify-content: space-between; alig
 
 .fab-btn { position: absolute; bottom: 40px; right: 40px; width: 70px; height: 70px; border-radius: 50%; background: var(--accent-color); color: white; border: none; font-size: 1.8rem; cursor: pointer; box-shadow: 0 15px 30px rgba(0, 210, 255, 0.4); }
 
-.side-menu { position: absolute; right: -100%; top: 0; width: 380px; height: 100%; background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(20px); z-index: 200; transition: 0.5s; padding: 40px; border-left: 1px solid rgba(255,255,255,0.1); }
+.side-menu { position: absolute; right: -100%; top: 0; width: 380px; height: 100%; background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(20px); z-index: 200; transition: 0.5s; padding: 40px; border-left: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
 .side-menu.active { right: 0; }
 
 .day-check { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 8px 4px; border-radius: 6px; font-size: 11px; cursor: pointer; flex: 1; text-align: center; display: inline-block; margin: 2px; }
 .day-check:has(input:checked) { background: var(--accent-color); color: black; font-weight: bold; }
 .day-check input { display: none; }
 
-.btn-save { width: 100%; padding: 18px; background: var(--accent-color); border: none; border-radius: 12px; color: white; font-weight: bold; margin-top: 20px; cursor: pointer; box-shadow: 0 10px 20px rgba(0, 210, 255, 0.3); }
+.btn-save { width: 100%; padding: 18px; background: var(--accent-color); border: none; border-radius: 12px; color: white; font-weight: bold; margin-top: 20px; cursor: pointer; }
 
 .input-group { margin-bottom: 20px; }
 .input-group label { display: block; color: var(--accent-color); font-size: 11px; margin-bottom: 8px; text-transform: uppercase; }
 .input-group input, textarea { width: 100%; padding: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; outline: none; }
 
-footer { height: 50px; }
+footer { height: 80px; width: 100%; }
+@media (max-width: 768px) { .side-menu { width: 100%; } }
