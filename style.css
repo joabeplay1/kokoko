@@ -38,7 +38,7 @@ body {
 /* LETREIROS BÍBLICOS NEON REVISADOS CONTRA SOBREPOSIÇÃO */
 .dynamic-verse-particle {
     position: absolute;
-    font-size: 1.5rem; /* Ajustado milimetricamente para legibilidade perfeita */
+    font-size: 1.5rem;
     font-weight: 800;
     text-transform: uppercase;
     white-space: nowrap;
