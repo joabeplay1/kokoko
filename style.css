@@ -2,8 +2,6 @@
     --bg-color: #050505;
     --accent-color: #00d2ff;
     --text-primary: #ffffff;
-    --success: #00ff88;
-    --warning: #f1c40f;
     --error: #ff4757;
 }
 
@@ -30,20 +28,18 @@ body {
 
 header {
     padding: 30px 40px; display: flex; justify-content: space-between; align-items: center;
-    background: transparent !important;
 }
 
 .logo { 
     font-size: 1.8rem; font-weight: bold; display: flex; align-items: center; gap: 12px;
     text-shadow: 0 0 20px var(--accent-color);
 }
-.logo i { color: var(--accent-color); }
+
 .logo span span { color: var(--accent-color); }
 
 .btn-secondary {
     background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
     color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer;
-    backdrop-filter: blur(5px);
 }
 
 #notification-area {
@@ -55,13 +51,7 @@ header {
 .notification {
     background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.1); border-left: 5px solid var(--accent-color);
-    padding: 20px; border-radius: 18px; animation: slideIn 0.5s ease forwards;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-}
-
-.notification-capa {
-    width: 100%; height: 150px; object-fit: cover;
-    border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1);
+    padding: 20px; border-radius: 18px; animation: slideIn 0.5s ease;
 }
 
 @keyframes slideIn {
@@ -69,23 +59,20 @@ header {
     to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* BOTÃO DE PARADA RÁPIDA (MAIN SCREEN) */
+.btn-drive-mini {
+    flex: 1; padding: 10px; background: rgba(255,255,255,0.05);
+    border: 1px solid var(--accent-color); color: var(--accent-color);
+    border-radius: 8px; cursor: pointer; font-size: 12px;
+}
+
 .stop-btn-modern {
     position: absolute; bottom: 40px; right: 130px;
     width: 70px; height: 70px; border-radius: 50%;
     background: rgba(255, 71, 87, 0.1); border: 2px solid var(--error);
     color: var(--error); font-size: 1.8rem; cursor: pointer; z-index: 100;
     display: flex; justify-content: center; align-items: center;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 0 15px rgba(255, 71, 87, 0.2);
-    backdrop-filter: blur(5px);
-}
-.stop-btn-modern:hover {
-    background: var(--error); color: white; transform: scale(1.1) rotate(15deg);
-    box-shadow: 0 0 30px rgba(255, 71, 87, 0.6);
 }
 
-/* Animação de pulso quando o som está tocando */
 .stop-btn-active { animation: pulse-red 1.5s infinite; }
 @keyframes pulse-red {
     0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
@@ -96,8 +83,7 @@ header {
 .fab-btn {
     position: absolute; bottom: 40px; right: 40px; width: 70px; height: 70px;
     border-radius: 50%; background: var(--accent-color); color: white;
-    border: none; font-size: 1.8rem; cursor: pointer; z-index: 100;
-    box-shadow: 0 15px 30px rgba(0, 210, 255, 0.4);
+    border: none; font-size: 1.8rem; cursor: pointer;
 }
 
 .side-menu {
@@ -107,25 +93,24 @@ header {
 }
 .side-menu.active { right: 0; }
 
-.days-selector { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
 .day-check {
     background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
     padding: 8px 4px; border-radius: 6px; font-size: 11px; cursor: pointer; flex: 1; text-align: center;
+    display: inline-block; margin: 2px;
 }
 .day-check:has(input:checked) { background: var(--accent-color); color: black; font-weight: bold; }
 .day-check input { display: none; }
 
 .btn-save {
     width: 100%; padding: 18px; background: var(--accent-color);
-    border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer;
+    border: none; border-radius: 12px; color: white; font-weight: bold; margin-top: 20px;
 }
 
-.input-group { margin-bottom: 20px; }
-.input-group label { display: block; color: var(--accent-color); font-size: 11px; margin-bottom: 8px; text-transform: uppercase; }
-.input-group input, textarea, select {
-    width: 100%; padding: 14px; background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; outline: none;
+.input-group { margin-bottom: 15px; }
+.input-group label { display: block; color: var(--accent-color); font-size: 11px; margin-bottom: 5px; }
+.input-group input, textarea {
+    width: 100%; padding: 12px; background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white;
 }
 
-footer { padding: 30px; text-align: center; color: var(--text-secondary); font-size: 14px; }
-@media (max-width: 768px) { .side-menu { width: 100%; } }
+footer { padding: 20px; height: 50px; }
