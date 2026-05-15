@@ -21,9 +21,9 @@ function animateBells() { bellCtx.fillStyle = '#050505'; bellCtx.fillRect(0, 0, 
 initBells(); animateBells();
 
 // ====== MEMÓRIA (LOCAL STORAGE) ======
-function salvarDados() { localStorage.setItem('jesus_reina_v7', JSON.stringify(agendamentosAtivos)); }
+function salvarDados() { localStorage.setItem('jesus_reina_vFinal', JSON.stringify(agendamentosAtivos)); }
 function carregarDados() {
-    const dados = localStorage.getItem('jesus_reina_v7');
+    const dados = localStorage.getItem('jesus_reina_vFinal');
     if (dados) {
         agendamentosAtivos = JSON.parse(dados);
         agendamentosAtivos.forEach(ev => sendNotify('success', 'Lembrete Ativo', `${ev.title} às ${ev.time}`));
@@ -93,5 +93,5 @@ setInterval(() => {
     });
 }, 1000);
 
-document.getElementById('clear-all').addEventListener('click', () => { agendamentosAtivos = []; localStorage.removeItem('jesus_reina_v7'); notificationArea.innerHTML = ''; });
+document.getElementById('clear-all').addEventListener('click', () => { agendamentosAtivos = []; localStorage.removeItem('jesus_reina_vFinal'); notificationArea.innerHTML = ''; });
 window.onload = carregarDados;
