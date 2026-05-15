@@ -8,14 +8,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div id="overlay-bg" class="overlay-destaque"></div>
 
-    <canvas id="notification-canvas"></canvas>
+    <div class="scenerio-live-background">
+        <div class="sky-clouds-layer"></div>
+        <div class="sun-rising-element"></div>
+        <div class="dynamic-verses-container"></div>
+        <div class="jesus-foreground-layer"></div>
+    </div>
+
+    <div id="central-alert-frame" class="hidden">
+        <div class="central-alert-content">
+            <div class="header-alerta">
+                <i class="fas fa-bell"></i>
+                <h3>NOTIFICAÇÃO ATIVA</h3>
+            </div>
+            <img id="central-alert-image" src="" alt="Capa da Notificação" class="central-capa">
+            <div id="central-alert-text"></div>
+            <div class="central-actions-row">
+                <button id="central-stop-btn" class="btn-interact-action stop-color">
+                    <i class="fas fa-pause"></i> PARAR SOM
+                </button>
+                <button class="btn-interact-action home-color" onclick="document.getElementById('central-alert-frame').classList.add('hidden')">
+                    <i class="fas fa-home"></i> HOME
+                </button>
+            </div>
+        </div>
+    </div>
 
     <div class="app-container">
         <div id="side-menu" class="side-menu">
             <div class="menu-content">
-                <div class="menu-header">
+                <div class="menu-header-side">
                     <h3>Agendar Evento</h3>
                     <button id="close-menu"><i class="fas fa-times"></i></button>
                 </div>
@@ -27,12 +50,12 @@
 
                 <div class="input-group">
                     <label>Descrição</label>
-                    <textarea id="event-desc" placeholder="Detalhes do lembrete..."></textarea>
+                    <textarea id="event-desc" placeholder="Detalhes..."></textarea>
                 </div>
 
                 <div class="input-row" style="display: flex; gap: 10px;">
                     <div class="input-group" style="flex: 1;">
-                        <label>Data Única</label>
+                        <label>Data</label>
                         <input type="date" id="event-date">
                     </div>
                     <div class="input-group" style="flex: 1;">
@@ -70,18 +93,11 @@
                     </button>
                 </div>
 
-                <div class="input-group">
-                    <label><i class="fab fa-google-drive"></i> Importar da Nuvem</label>
-                    <button type="button" class="btn-drive-separete" onclick="alert('Funcionalidade Drive Ativa. Use links externos na descrição para salvar permanentemente.')">
-                        <i class="fab fa-google-drive"></i> Google Drive
-                    </button>
-                </div>
-
                 <button id="save-event" class="btn-save">Agendar Agora</button>
             </div>
         </div>
 
-        <header>
+        <header class="main-header">
             <div class="logo">
                 <i class="fas fa-bell"></i>
                 <span>Jesus <span>Reina</span></span>
@@ -99,8 +115,6 @@
                 <i class="fas fa-plus"></i>
             </button>
         </div>
-
-        <footer></footer>
     </div>
 
     <script src="script.js"></script>
