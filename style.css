@@ -35,7 +35,7 @@ body {
     overflow: hidden;
 }
 
-/* LETREIROS BÍBLICOS NEON REVISADOS CONTRA SOBREPOSIÇÃO */
+/* LETREIROS BÍBLICOS NEON */
 .dynamic-verse-particle {
     position: absolute;
     font-size: 1.5rem;
@@ -43,7 +43,7 @@ body {
     text-transform: uppercase;
     white-space: nowrap;
     opacity: 0;
-    max-width: 82vw; /* Margem rígida para as letras nunca serem comidas na direita */
+    max-width: 82vw;
     overflow: hidden;
     text-shadow: 0 0 12px currentColor, 0 0 4px rgba(0, 0, 0, 0.9);
     animation: riseUpText 16s linear infinite;
