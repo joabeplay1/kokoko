@@ -9,27 +9,26 @@
 </head>
 <body>
 
-    <div class="scenerio-live-background">
-        <div class="sky-clouds-layer"></div>
-        <div class="sun-rising-element"></div>
-        <div class="dynamic-verses-container"></div>
-        <div class="jesus-foreground-layer"></div>
-    </div>
+    <canvas id="notification-canvas"></canvas>
+    <div class="dynamic-verses-container"></div>
 
     <div id="central-alert-frame" class="hidden">
-        <div class="central-alert-content">
-            <div class="header-alerta">
-                <i class="fas fa-bell"></i>
-                <h3>NOTIFICAÇÃO ATIVA</h3>
+        <div class="central-alert-content-modern">
+            <div class="header-alerta-modern">
+                <i class="fas fa-bell pulse-icon"></i>
+                <h3>ALERTA DE NOTIFICAÇÃO</h3>
             </div>
-            <img id="central-alert-image" src="" alt="Capa da Notificação" class="central-capa">
-            <div id="central-alert-text"></div>
+            
+            <img id="central-alert-image" src="" alt="Capa da Notificação" class="central-capa-modern">
+            
+            <div id="central-alert-text" class="text-info-modern"></div>
+            
             <div class="central-actions-row">
-                <button id="central-stop-btn" class="btn-interact-action stop-color">
+                <button id="central-stop-btn" class="btn-action-modern stop-neon">
                     <i class="fas fa-pause"></i> PARAR SOM
                 </button>
-                <button class="btn-interact-action home-color" onclick="document.getElementById('central-alert-frame').classList.add('hidden')">
-                    <i class="fas fa-home"></i> HOME
+                <button class="btn-action-modern home-neon" onclick="document.getElementById('central-alert-frame').classList.add('hidden')">
+                    <i class="fas fa-home"></i> FECHAR
                 </button>
             </div>
         </div>
@@ -50,12 +49,12 @@
 
                 <div class="input-group">
                     <label>Descrição</label>
-                    <textarea id="event-desc" placeholder="Detalhes..."></textarea>
+                    <textarea id="event-desc" placeholder="Detalhes do lembrete..."></textarea>
                 </div>
 
                 <div class="input-row" style="display: flex; gap: 10px;">
                     <div class="input-group" style="flex: 1;">
-                        <label>Data</label>
+                        <label>Data Única</label>
                         <input type="date" id="event-date">
                     </div>
                     <div class="input-group" style="flex: 1;">
@@ -115,6 +114,8 @@
                 <i class="fas fa-plus"></i>
             </button>
         </div>
+
+        <footer></footer>
     </div>
 
     <script src="script.js"></script>
