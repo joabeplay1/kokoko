@@ -5,9 +5,7 @@ const overlayBg = document.getElementById('central-alert-frame');
 let agendamentosAtivos = [];
 let somAtivo = null;
 
-// ============================================================================
-// [NOVO CÓDIGO INSERIDO] - ATIVADOR E REGISTRO DO SERVICE WORKER EM SEGUNDO PLANO
-// ============================================================================
+// ====== REGISTRO DO SERVICE WORKER EM SEGUNDO PLANO ======
 let serviceWorkerReg = null;
 
 if ('serviceWorker' in navigator && 'Notification' in window) {
@@ -17,11 +15,10 @@ if ('serviceWorker' in navigator && 'Notification' in window) {
                 serviceWorkerReg = registration;
                 console.log('Service Worker ativo com sucesso!');
                 
-                // Solicita a permissão oficial para notificações no sistema do computador
                 if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
                     Notification.requestPermission().then(permission => {
                         if (permission === 'granted') {
-                            console.log('Permissão concedida pelo usuário.');
+                            console.log('Permissão de notificações concedida.');
                         }
                     });
                 }
@@ -31,7 +28,20 @@ if ('serviceWorker' in navigator && 'Notification' in window) {
             });
     });
 }
-// ============================================================================
+
+// ====== LÓGICA DE INSTALAÇÃO DO APLICATIVO (PWA) ======
+let eventoInstalacao = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    eventoInstalacao = e;
+    console.log('Jesus Reina pronto para ser instalado no sistema!');
+});
+
+window.addEventListener('appinstalled', () => {
+    console.log('Obrigado por instalar o Jesus Reina!');
+    eventoInstalacao = null;
+});
 
 // ====== CANVAS DOS SININHOS ======
 const canvas = document.getElementById('notification-canvas');
@@ -61,36 +71,20 @@ function animateCanvasBells() {
 }
 initCanvasBells(); animateCanvasBells();
 
-// ====== LETREIROS BÍBLICOS NEON INTEGRADOS COM AS 20 FRASES ======
+// ====== LETREIROS BÍBLICOS NEON INTEGRADOS ======
 const listVersesNeon = [
-    'AMAI-VOS UNS AOS OUTROS', 
-    'EU SOU O CAMINHO', 
-    'TEREIS AFLIÇÕES, MAS TENDE BOM ÂNIMO',
-    'BUSCAI PRIMEIRO O REINO DE DEUS', 
-    'TUDO É POSSÍVEL AO QUE CRÊ', 
-    'A MINHA PAZ VOS DOU',
-    'VENHAM A MIM', 
-    'NÃO TEMAS, CRÊ SOMENTE', 
-    'EU SOU A LUZ DO MUNDO', 
-    'SEJA FEITA A TUA VONTADE',
-    'TUDO POSSO NAQUELA QUE ME FORTALECE.',
-    'O SENHOR É O MEU PASTOR; NADA ME FALTARÁ.',
+    'AMAI-VOS UNS AOS OUTROS', 'EU SOU O CAMINHO', 'TEREIS AFLIÇÕES, MAS TENDE BOM ÂNIMO',
+    'BUSCAI PRIMEIRO O REINO DE DEUS', 'TUDO É POSSÍVEL AO QUE CRÊ', 'A MINHA PAZ VOS DOU',
+    'VENHAM A MIM', 'NÃO TEMAS, CRÊ SOMENTE', 'EU SOU A LUZ DO MUNDO', 'SEJA FEITA A TUA VONTADE',
+    'TUDO POSSO NAQUELA QUE ME FORTALECE.', 'O SENHOR É O MEU PASTOR; NADA ME FALTARÁ.',
     'ENTREGA O TEU CAMINHO AO SENHOR; CONFIA NELE, E ELE TUDO FARÁ.',
     'PORQUE DEUS AMOU O MUNDO DE TAL MANEIRA QUE DEU O SEU FILHO UNIGÊNITO.',
-    'SE DEUS É POR NÓS, QUEM SERÁ CONTRA NÓS?',
-    'O CHORO PODE DURAR UMA NOITE, MAS A ALEGRIA VEM PELA MANHÃ.',
-    'A FÉ REMOVE MONTANHAS.',
-    'NÃO TEMAS, PORQUE EU SOU CONTIGO.',
-    'O AMOR TUDO SOFRE, TUDO CRÊ, TUDO ESPERA, TUDO SUPORTA.',
-    'BEM-AVENTURADOS OS QUE PROMOVEM A PAZ.',
-    'A MINHA GRAÇA TE BASTA.',
-    'CONFIA NO SENHOR DE TODO O TEU CORAÇÃO.',
-    'O SENHER LUTARÁ POR VOCÊS.',
-    'EM DEUS FAREMOS PROEZAS.',
-    'TUDO TEM O SEU TEMPO DETERMINADO.',
-    'SEDE FORTES E CORAJOSOS.',
-    'PEDI, E DAR-SE-VOS-Á.',
-    'ALEGRAI-VOS NA ESPERANÇA.',
+    'SE DEUS É POR NÓS, QUEM SERÁ CONTRA NÓS?', 'O CHORO PODE DURAR UMA NOITE, MAS A ALEGRIA VEM PELA MANHÃ.',
+    'A FÉ REMOVE MONTANHAS.', 'NÃO TEMAS, PORQUE EU SOU CONTIGO.',
+    'O AMOR TUDO SOFRE, TUDO CRÊ, TUDO ESPERA, TUDO SUPORTA.', 'BEM-AVENTURADOS OS QUE PROMOVEM A PAZ.',
+    'A MINHA GRAÇA TE BASTA.', 'CONFIA NO SENHOR DE TODO O TEU CORAÇÃO.',
+    'O SENHER LUTARÁ POR VOCÊS.', 'EM DEUS FAREMOS PROEZAS.', 'TUDO TEM O SEU TEMPO DETERMINADO.',
+    'SEDE FORTES E CORAJOSOS.', 'PEDI, E DAR-SE-VOS-Á.', 'ALEGRAI-VOS NA ESPERANÇA.',
     'O SENHOR É A MINHA LUZ E A MINHA SALVAÇÃO.'
 ];
 const neonColorsClasses = ['neon-cyan', 'neon-gold', 'neon-green', 'neon-purple'];
@@ -99,16 +93,14 @@ function spawnNeonVerse() {
     const container = document.querySelector('.dynamic-verses-container');
     if (!container) return;
 
-    if (container.children.length > 5) return; // Evita acúmulo e sobreposições
+    if (container.children.length > 5) return;
 
     const span = document.createElement('span');
     const randomColor = neonColorsClasses[Math.floor(Math.random() * neonColorsClasses.length)];
     span.className = `dynamic-verse-particle ${randomColor}`;
     span.innerText = listVersesNeon[Math.floor(Math.random() * listVersesNeon.length)];
     
-    // Alinhamento inteligente (entre 5% e 48% da largura da tela)
     span.style.left = `${Math.random() * 43 + 5}vw`;
-    
     span.style.animationDuration = `${Math.random() * 4 + 14}s`;
     container.appendChild(span);
     setTimeout(() => span.remove(), 18000);
@@ -179,9 +171,7 @@ setInterval(() => {
             document.getElementById('central-alert-text').innerHTML = `<h3>⏰ ${ev.title}</h3><p>${ev.desc}</p>`;
             overlayBg.classList.remove('hidden');
 
-            // ============================================================================
-            // [NOVO CÓDIGO INSERIDO] - DISPARA O ALERTA DIRETAMENTE PARA O WINDOWS / SISTEMA OPERACIONAL
-            // ============================================================================
+            // DISPARO DE SINAL PARA NOTIFICAÇÃO NATIVA DO PC
             if (navigator.serviceWorker && navigator.serviceWorker.controller) {
                 navigator.serviceWorker.controller.postMessage({
                     type: 'DISPARAR_ALERTA',
@@ -189,7 +179,6 @@ setInterval(() => {
                     desc: ev.desc
                 });
             }
-            // ============================================================================
 
             if (ev.soundUrl) {
                 if (somAtivo) desligarAlerta();
