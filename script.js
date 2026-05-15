@@ -33,33 +33,62 @@ function animateCanvasBells() {
 }
 initCanvasBells(); animateCanvasBells();
 
-// ====== VERSÍCULOS DINÂMICOS COM CORES NEON ALTERNADAS ======
+// ====== LETREIROS BÍBLICOS NEON INTEGRADOS ======
 const listVersesNeon = [
-    'AMAI-VOS UNS AOS OUTROS', 'EU SOU O CAMINHO', 'TEREIS AFLIÇÕES, MAS TENDE BOM ÂNIMO',
-    'BUSCAI PRIMEIRO O REINO DE DEUS', 'TUDO É POSSÍVEL AO QUE CRÊ', 'A MINHA PAZ VOS DOU',
-    'VENHAM A MIM', 'NÃO TEMAS, CRÊ SOMENTE', 'EU SOU A LUZ DO MUNDO', 'SEJA FEITA A TUA VONTADE'
+    'AMAI-VOS UNS AOS OUTROS', 
+    'EU SOU O CAMINHO', 
+    'TEREIS AFLIÇÕES, MAS TENDE BOM ÂNIMO',
+    'BUSCAI PRIMEIRO O REINO DE DEUS', 
+    'TUDO É POSSÍVEL AO QUE CRÊ', 
+    'A MINHA PAZ VOS DOU',
+    'VENHAM A MIM', 
+    'NÃO TEMAS, CRÊ SOMENTE', 
+    'EU SOU A LUZ DO MUNDO', 
+    'SEJA FEITA A TUA VONTADE',
+    'TUDO POSSO NAQUELA QUE ME FORTALECE.',
+    'O SENHOR É O MEU PASTOR; NADA ME FALTARÁ.',
+    'ENTREGA O TEU CAMINHO AO SENHOR; CONFIA NELE, E ELE TUDO FARÁ.',
+    'PORQUE DEUS AMOU O MUNDO DE TAL MANEIRA QUE DEU O SEU FILHO UNIGÊNITO.',
+    'SE DEUS É POR NÓS, QUEM SERÁ CONTRA NÓS?',
+    'O CHORO PODE DURAR UMA NOITE, MAS A ALEGRIA VEM PELA MANHÃ.',
+    'A FÉ REMOVE MONTANHAS.',
+    'NÃO TEMAS, PORQUE EU SOU CONTIGO.',
+    'O AMOR TUDO SOFRE, TUDO CRÊ, TUDO ESPERA, TUDO SUPORTA.',
+    'BEM-AVENTURADOS OS QUE PROMOVEM A PAZ.',
+    'A MINHA GRAÇA TE BASTA.',
+    'CONFIA NO SENHOR DE TODO O TEU CORAÇÃO.',
+    'O SENHER LUTARÁ POR VOCÊS.',
+    'EM DEUS FAREMOS PROEZAS.',
+    'TUDO TEM O SEU TEMPO DETERMINADO.',
+    'SEDE FORTES E CORAJOSOS.',
+    'PEDI, E DAR-SE-VOS-Á.',
+    'ALEGRAI-VOS NA ESPERANÇA.',
+    'O SENHOR É A MINHA LUZ E A MINHA SALVAÇÃO.'
 ];
 const neonColorsClasses = ['neon-cyan', 'neon-gold', 'neon-green', 'neon-purple'];
 
-// FUNÇÃO DE SPAWN CORRIGIDA CONTRA CORTES LATERAIS
+// FUNÇÃO DE RENDERIZAÇÃO INTELIGENTE CONTRA SOBREPOSIÇÃO E CORTE
 function spawnNeonVerse() {
     const container = document.querySelector('.dynamic-verses-container');
     if (!container) return;
+
+    // Proteção de sobreposição: Impede novos spawns se já existirem muitas partículas ativas ao mesmo tempo
+    if (container.children.length > 5) return;
 
     const span = document.createElement('span');
     const randomColor = neonColorsClasses[Math.floor(Math.random() * neonColorsClasses.length)];
     span.className = `dynamic-verse-particle ${randomColor}`;
     span.innerText = listVersesNeon[Math.floor(Math.random() * listVersesNeon.length)];
     
-    // Alinhamento inteligente: limita o nascimento entre 5% e 55% da tela.
-    // Garante margem segura e evita o corte da frase na direita.
-    span.style.left = `${Math.random() * 50 + 5}vw`;
+    // Alinhamento horizontal seguro: Nasce entre 5% e 48% da largura da tela.
+    // Assim, restam mais de 50% de espaço livre à direita para que o versículo apareça por inteiro sem ser cortado.
+    span.style.left = `${Math.random() * 43 + 5}vw`;
     
     span.style.animationDuration = `${Math.random() * 4 + 14}s`;
     container.appendChild(span);
     setTimeout(() => span.remove(), 18000);
 }
-setInterval(spawnNeonVerse, 2800);
+setInterval(spawnNeonVerse, 3200); // Intervalo suavizado para evitar choque de frases
 
 // ====== MEMÓRIA (LOCAL STORAGE) ======
 function salvarDados() { localStorage.setItem('jesus_reina_vFinal_Neon_Fix', JSON.stringify(agendamentosAtivos)); }
@@ -77,7 +106,6 @@ function desligarAlerta() {
     overlayBg.classList.add('hidden');
 }
 
-// Card visível na fila
 function sendNotify(title, time) {
     const card = document.createElement('div');
     card.className = 'notification';
@@ -132,7 +160,7 @@ setInterval(() => {
                 quickStopBtn.classList.add('stop-btn-active');
                 
                 document.getElementById('central-stop-btn').onclick = desligarAlerta;
-                setTimeout(desligarAlerta, 900000); // Encerra sozinho com 15 minutos
+                setTimeout(desligarAlerta, 900000);
             }
         }
         if (hora === "00:00") ev.tocadoHoje = false;
