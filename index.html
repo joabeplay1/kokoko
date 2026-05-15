@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notify Pro - Ultra Futurista</title>
+    <title>Jesus Reina - Suíte Ultra Futurista</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -21,17 +21,17 @@
                 
                 <div class="input-group">
                     <label>Título do Evento</label>
-                    <input type="text" id="event-title" placeholder="Ex: Notificação Importante">
+                    <input type="text" id="event-title" placeholder="Ex: Oração da Manhã">
                 </div>
 
                 <div class="input-group">
                     <label>Descrição</label>
-                    <textarea id="event-desc" placeholder="Detalhes do lembrete..."></textarea>
+                    <textarea id="event-desc" placeholder="Detalhes..."></textarea>
                 </div>
 
                 <div class="input-row" style="display: flex; gap: 10px;">
                     <div class="input-group" style="flex: 1;">
-                        <label>Data Única</label>
+                        <label>Data</label>
                         <input type="date" id="event-date">
                     </div>
                     <div class="input-group" style="flex: 1;">
@@ -54,22 +54,16 @@
                 </div>
 
                 <div class="input-group">
-                    <label>Categoria</label>
-                    <select id="event-category">
-                        <option value="success">🎉 Festa / Evento</option>
-                        <option value="warning">🎂 Aniversário</option>
-                        <option value="error">⚠️ Urgente</option>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <label><i class="fas fa-image"></i> Capa da Notificação (Foto)</label>
-                    <input type="file" id="event-image" accept="image/*">
-                </div>
-
-                <div class="input-group">
-                    <label><i class="fas fa-music"></i> Som do Alerta (.mp3)</label>
-                    <input type="file" id="event-sound" accept="audio/*">
+                    <label><i class="fab fa-google-drive"></i> Imagem e Som (Drive ou PC)</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="file" id="event-sound" accept="audio/*" style="display: none;">
+                        <button type="button" class="btn-drive-mini" onclick="document.getElementById('event-sound').click()">
+                             <i class="fas fa-music"></i> PC
+                        </button>
+                        <button type="button" class="btn-drive-mini" onclick="alert('Integração Drive: Cole o link direto do arquivo no campo descrição para usar links externos por enquanto.')">
+                             <i class="fab fa-google-drive"></i> Drive
+                        </button>
+                    </div>
                 </div>
 
                 <button id="save-event" class="btn-save">Agendar Agora</button>
@@ -79,27 +73,23 @@
         <header>
             <div class="logo">
                 <i class="fas fa-bell"></i>
-                <span>Notify<span>Pro</span></span>
+                <span>Jesus <span>Reina</span></span>
             </div>
             <button id="clear-all" class="btn-secondary">Limpar Painel</button>
         </header>
 
-        <main id="notification-area">
-            </main>
+        <main id="notification-area"></main>
 
         <div class="action-buttons">
-            <button id="quick-stop" class="stop-btn-modern" onclick="desligarAlerta(this)" title="Parar todos os sons">
-                <i class="fas fa-volume-slash"></i>
+            <button id="quick-stop" class="stop-btn-modern" onclick="desligarAlerta(this)">
+                <i class="fas fa-pause"></i>
             </button>
-
             <button id="open-menu" class="fab-btn">
                 <i class="fas fa-plus"></i>
             </button>
         </div>
 
-        <footer>
-            <p>Monitoramento em Tempo Real Ativo</p>
-        </footer>
+        <footer></footer>
     </div>
 
     <script src="script.js"></script>
