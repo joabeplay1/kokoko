@@ -12,15 +12,15 @@ body {
     color: var(--text-primary);
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Permite rolagem do topo */
+    align-items: flex-start;
     min-height: 100vh;
-    overflow-y: auto;   /* LIBERA ROLAGEM PARA BAIXO */
-    overflow-x: auto;   /* LIBERA ROLAGEM PARA OS LADOS SE NECESSÁRIO */
+    overflow-y: auto;
+    overflow-x: auto;
     padding: 20px 0;
 }
 
 #notification-canvas {
-    position: fixed; /* Mantém os sininhos no fundo mesmo ao rolar */
+    position: fixed;
     top: 0; left: 0; width: 100vw; height: 100vh;
     z-index: -1; pointer-events: none;
 }
@@ -28,7 +28,7 @@ body {
 .app-container {
     width: 100%;
     max-width: 1200px;
-    min-height: 95vh; /* Garante que o container cresça com o conteúdo */
+    min-height: 95vh;
     background: transparent !important;
     display: flex;
     flex-direction: column;
@@ -45,13 +45,37 @@ header { padding: 30px 40px; display: flex; justify-content: space-between; alig
 
 #notification-area { flex: 1; padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; align-content: start; }
 
-.notification { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-left: 5px solid var(--accent-color); padding: 20px; border-radius: 18px; animation: slideIn 0.5s ease; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin-bottom: 10px; }
+.notification { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-left: 5px solid var(--accent-color); padding: 20px; border-radius: 18px; animation: slideIn 0.5s ease; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin-bottom: 10px; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-.notification-capa { width: 100%; height: 150px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
+.notification-capa { width: 100%; height: 150px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); transition: height 0.5s; }
 
 @keyframes slideIn { from { opacity: 0; transform: scale(0.9) translateY(30px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-/* BOTÕES DE UPLOAD NO MENU */
+/* ESTILO PARA O QUADRO MAIOR (DESTAKE) */
+.notification.playing {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.1);
+    width: 500px;
+    max-width: 90vw;
+    z-index: 9999;
+    box-shadow: 0 0 50px rgba(0, 210, 255, 0.5);
+    border: 2px solid var(--accent-color);
+}
+
+.notification.playing .notification-capa {
+    height: 250px;
+}
+
+.overlay-destaque {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 9998;
+    display: none;
+}
+
 .btn-upload-local { width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 5px; transition: 0.3s; }
 .btn-upload-local:hover { background: rgba(255, 255, 255, 0.15); border-color: var(--accent-color); }
 
@@ -78,4 +102,5 @@ header { padding: 30px 40px; display: flex; justify-content: space-between; alig
 .input-group input, textarea { width: 100%; padding: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; outline: none; }
 
 footer { height: 80px; width: 100%; }
-@media (max-width: 768px) { .side-menu { width: 100%; } }
+
+.btn-stop-alerta { width: 100%; padding: 10px; background: rgba(0, 210, 255, 0.2); border: 1px solid var(--accent-color); color: white; border-radius: 8px; margin-top: 10px; cursor: pointer; font-weight: bold; }
