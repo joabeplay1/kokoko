@@ -35,17 +35,17 @@ body {
     overflow: hidden;
 }
 
-/* LETREIROS BÍBLICOS NEON CORRIGIDOS (SEM CORTE) */
+/* LETREIROS BÍBLICOS NEON REVISADOS CONTRA SOBREPOSIÇÃO */
 .dynamic-verse-particle {
     position: absolute;
-    font-size: 1.6rem; /* Calibrado para perfeita exibição total */
+    font-size: 1.5rem; /* Ajustado milimetricamente para legibilidade perfeita */
     font-weight: 800;
     text-transform: uppercase;
     white-space: nowrap;
     opacity: 0;
-    max-width: 85vw; /* Impede o texto de transbordar na lateral direita */
+    max-width: 82vw; /* Margem rígida para as letras nunca serem comidas na direita */
     overflow: hidden;
-    text-shadow: 0 0 12px currentColor, 0 0 4px #000;
+    text-shadow: 0 0 12px currentColor, 0 0 4px rgba(0, 0, 0, 0.9);
     animation: riseUpText 16s linear infinite;
 }
 
