@@ -1,6 +1,7 @@
 const notificationArea = document.getElementById('notification-area');
 const sideMenu = document.getElementById('side-menu');
 const quickStopBtn = document.getElementById('quick-stop');
+const overlayBg = document.getElementById('overlay-bg');
 let agendamentosAtivos = [];
 let somAtivo = null;
 
@@ -21,9 +22,9 @@ function animateBells() { bellCtx.fillStyle = '#050505'; bellCtx.fillRect(0, 0, 
 initBells(); animateBells();
 
 // ====== MEMÓRIA (LOCAL STORAGE) ======
-function salvarDados() { localStorage.setItem('jesus_reina_vFinal', JSON.stringify(agendamentosAtivos)); }
+function salvarDados() { localStorage.setItem('jesus_reina_vFinal_Destaque', JSON.stringify(agendamentosAtivos)); }
 function carregarDados() {
-    const dados = localStorage.getItem('jesus_reina_vFinal');
+    const dados = localStorage.getItem('jesus_reina_vFinal_Destaque');
     if (dados) {
         agendamentosAtivos = JSON.parse(dados);
         agendamentosAtivos.forEach(ev => sendNotify('success', 'Lembrete Ativo', `${ev.title} às ${ev.time}`));
@@ -34,6 +35,14 @@ function carregarDados() {
 function desligarAlerta(btn) {
     if (somAtivo) { somAtivo.pause(); somAtivo.currentTime = 0; somAtivo = null; }
     quickStopBtn.classList.remove('stop-btn-active');
+    
+    // Remove o destaque do card maior e volta ao normal
+    const cardDestaque = document.querySelector('.notification.playing');
+    if (cardDestaque) {
+        cardDestaque.classList.remove('playing');
+        overlayBg.style.display = 'none';
+    }
+
     if (btn && btn.classList.contains('btn-stop-alerta')) { btn.innerHTML = '<i class="fas fa-check"></i> Silenciado'; btn.disabled = true; }
 }
 
@@ -44,6 +53,7 @@ function sendNotify(type, title, message, imageUrl = null, showStopBtn = false) 
     let btnHtml = showStopBtn ? `<button class="btn-stop-alerta" onclick="desligarAlerta(this)"><i class="fas fa-volume-mute"></i> Parar Som</button>` : '';
     card.innerHTML = `${imgHtml}<h4>${title}</h4><p>${message}</p>${btnHtml}`;
     notificationArea.prepend(card);
+    return card;
 }
 
 document.getElementById('open-menu').addEventListener('click', () => sideMenu.classList.add('active'));
@@ -81,11 +91,18 @@ setInterval(() => {
         const eDia = ev.days.length > 0 ? ev.days.includes(dia) : (ev.date === dataH);
         if (eDia && ev.time === hora && !ev.tocadoHoje) {
             ev.tocadoHoje = true;
-            sendNotify('success', `⏰ AGORA: ${ev.title}`, ev.desc, ev.imageUrl, true);
+            
+            // Criar e aplicar destaque (Zoom)
+            const novoCard = sendNotify('success', `⏰ AGORA: ${ev.title}`, ev.desc, ev.imageUrl, true);
+            novoCard.classList.add('playing');
+            overlayBg.style.display = 'block';
+
             if (ev.soundUrl) {
                 if(somAtivo) desligarAlerta();
                 somAtivo = new Audio(ev.soundUrl); somAtivo.loop = true; somAtivo.play();
                 quickStopBtn.classList.add('stop-btn-active');
+                
+                // Desliga automático após 15 minutos
                 setTimeout(() => desligarAlerta(), 900000); 
             }
         }
@@ -93,5 +110,5 @@ setInterval(() => {
     });
 }, 1000);
 
-document.getElementById('clear-all').addEventListener('click', () => { agendamentosAtivos = []; localStorage.removeItem('jesus_reina_vFinal'); notificationArea.innerHTML = ''; });
+document.getElementById('clear-all').addEventListener('click', () => { agendamentosAtivos = []; localStorage.removeItem('jesus_reina_vFinal_Destaque'); notificationArea.innerHTML = ''; });
 window.onload = carregarDados;
