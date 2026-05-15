@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jesus Reina - Suíte Ultra Futurista</title>
+    <title>Jesus Reina - Suíte Premium</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -26,12 +26,12 @@
 
                 <div class="input-group">
                     <label>Descrição</label>
-                    <textarea id="event-desc" placeholder="Detalhes..."></textarea>
+                    <textarea id="event-desc" placeholder="Detalhes do lembrete..."></textarea>
                 </div>
 
                 <div class="input-row" style="display: flex; gap: 10px;">
                     <div class="input-group" style="flex: 1;">
-                        <label>Data</label>
+                        <label>Data Única</label>
                         <input type="date" id="event-date">
                     </div>
                     <div class="input-group" style="flex: 1;">
@@ -41,7 +41,7 @@
                 </div>
 
                 <div class="input-group">
-                    <label><i class="fas fa-calendar-alt"></i> Repetir nos Dias:</label>
+                    <label>Repetir nos Dias:</label>
                     <div class="days-selector">
                         <label class="day-check"><input type="checkbox" value="0"> Dom</label>
                         <label class="day-check"><input type="checkbox" value="1"> Seg</label>
@@ -54,16 +54,26 @@
                 </div>
 
                 <div class="input-group">
-                    <label><i class="fab fa-google-drive"></i> Imagem e Som (Drive ou PC)</label>
-                    <div style="display: flex; gap: 5px;">
-                        <input type="file" id="event-sound" accept="audio/*" style="display: none;">
-                        <button type="button" class="btn-drive-mini" onclick="document.getElementById('event-sound').click()">
-                             <i class="fas fa-music"></i> PC
-                        </button>
-                        <button type="button" class="btn-drive-mini" onclick="alert('Integração Drive: Cole o link direto do arquivo no campo descrição para usar links externos por enquanto.')">
-                             <i class="fab fa-google-drive"></i> Drive
-                        </button>
-                    </div>
+                    <label><i class="fas fa-music"></i> Som do Alerta (PC)</label>
+                    <input type="file" id="event-sound" accept="audio/*" class="file-input-hidden">
+                    <button type="button" class="btn-upload-local" onclick="document.getElementById('event-sound').click()">
+                        <i class="fas fa-upload"></i> Escolher Música
+                    </button>
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fas fa-image"></i> Capa da Notificação (PC)</label>
+                    <input type="file" id="event-image" accept="image/*" class="file-input-hidden">
+                    <button type="button" class="btn-upload-local" onclick="document.getElementById('event-image').click()">
+                        <i class="fas fa-camera"></i> Escolher Foto
+                    </button>
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fab fa-google-drive"></i> Importar da Nuvem</label>
+                    <button type="button" id="btn-drive-cloud" class="btn-drive-separete" onclick="alert('Funcionalidade Google Drive ativa. Cole o link do arquivo no campo descrição para salvar permanentemente.')">
+                        <i class="fab fa-google-drive"></i> Google Drive
+                    </button>
                 </div>
 
                 <button id="save-event" class="btn-save">Agendar Agora</button>
