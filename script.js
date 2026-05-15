@@ -1,114 +1,100 @@
 const notificationArea = document.getElementById('notification-area');
 const sideMenu = document.getElementById('side-menu');
 const quickStopBtn = document.getElementById('quick-stop');
-const overlayBg = document.getElementById('overlay-bg');
 let agendamentosAtivos = [];
 let somAtivo = null;
 
-// ====== FUNDO DE SININHOS ======
-const bellCanvas = document.getElementById('notification-canvas');
-const bellCtx = bellCanvas.getContext('2d');
-let bells = [];
-function resizeBellCanvas() { bellCanvas.width = window.innerWidth; bellCanvas.height = window.innerHeight; }
-window.addEventListener('resize', resizeBellCanvas); resizeBellCanvas();
-class FloatingBell {
-    constructor() { this.reset(); this.y = Math.random() * bellCanvas.height; }
-    reset() { this.x = Math.random() * bellCanvas.width; this.y = bellCanvas.height + 100; this.size = Math.random() * 25 + 22; this.speedY = Math.random() * 0.6 + 0.3; this.opacity = Math.random() * 0.18 + 0.08; this.swingSpeed = Math.random() * 0.02; }
-    update() { this.y -= this.speedY; this.x += Math.sin(this.y * this.swingSpeed) * 0.8; if (this.y < -100) this.reset(); }
-    draw() { bellCtx.save(); bellCtx.font = `${this.size}px "Font Awesome 6 Free"`; bellCtx.fontWeight = "900"; bellCtx.fillStyle = `rgba(0, 210, 255, ${this.opacity})`; bellCtx.shadowBlur = 15; bellCtx.shadowColor = "rgba(0, 210, 255, 0.6)"; bellCtx.fillText('\uf0f3', this.x, this.y); bellCtx.restore(); }
-}
-function initBells() { for (let i = 0; i < 55; i++) bells.push(new FloatingBell()); }
-function animateBells() { bellCtx.fillStyle = '#050505'; bellCtx.fillRect(0, 0, bellCanvas.width, bellCanvas.height); bells.forEach(bell => { bell.update(); bell.draw(); }); requestAnimationFrame(animateBells); }
-initBells(); animateBells();
+// ====== VERSÍCULOS DINÂMICOS ======
+const versiculos = [
+    'AMAI-VOS UNS AOS OUTROS', 'EU SOU O CAMINHO', 'TEREIS AFLIÇÕES, MAS TENDE BOM ÂNIMO',
+    'BUSCAI PRIMEIRO O REINO DE DEUS', 'TUDO É POSSÍVEL AO QUE CRÊ', 'A MINHA PAZ VOS DOU',
+    'VENHAM A MIM', 'NÃO TEMAS, CRÊ SOMENTE', 'EU SOU A LUZ DO MUNDO'
+];
 
-// ====== MEMÓRIA (LOCAL STORAGE) ======
-function salvarDados() { localStorage.setItem('jesus_reina_vFinal_Destaque', JSON.stringify(agendamentosAtivos)); }
-function carregarDados() {
-    const dados = localStorage.getItem('jesus_reina_vFinal_Destaque');
-    if (dados) {
-        agendamentosAtivos = JSON.parse(dados);
-        agendamentosAtivos.forEach(ev => sendNotify('success', 'Lembrete Ativo', `${ev.title} às ${ev.time}`));
-    }
+function spawnVerse() {
+    const container = document.querySelector('.dynamic-verses-container');
+    const span = document.createElement('span');
+    span.className = 'dynamic-verse-particle';
+    span.innerText = versiculos[Math.floor(Math.random() * versiculos.length)];
+    span.style.left = `${Math.random() * 70 + 5}vw`;
+    span.style.animationDuration = `${Math.random() * 5 + 15}s`;
+    container.appendChild(span);
+    setTimeout(() => span.remove(), 20000);
 }
+setInterval(spawnVerse, 3000);
 
-// ====== LOGICA DO APLICATIVO ======
-function desligarAlerta(btn) {
+// ====== LOGICA DO APP ======
+function desligarAlerta() {
     if (somAtivo) { somAtivo.pause(); somAtivo.currentTime = 0; somAtivo = null; }
     quickStopBtn.classList.remove('stop-btn-active');
-    
-    // Remove o destaque do card maior e volta ao normal
-    const cardDestaque = document.querySelector('.notification.playing');
-    if (cardDestaque) {
-        cardDestaque.classList.remove('playing');
-        overlayBg.style.display = 'none';
+    document.getElementById('central-alert-frame').classList.add('hidden');
+}
+
+function salvarDados() { localStorage.setItem('jesus_reina_db', JSON.stringify(agendamentosAtivos)); }
+function carregarDados() {
+    const dados = localStorage.getItem('jesus_reina_db');
+    if (dados) {
+        agendamentosAtivos = JSON.parse(dados);
+        agendamentosAtivos.forEach(ev => sendNotify(ev.title, ev.time));
     }
-
-    if (btn && btn.classList.contains('btn-stop-alerta')) { btn.innerHTML = '<i class="fas fa-check"></i> Silenciado'; btn.disabled = true; }
 }
 
-function sendNotify(type, title, message, imageUrl = null, showStopBtn = false) {
+function sendNotify(title, time) {
     const card = document.createElement('div');
-    card.className = `notification ${type}`;
-    let imgHtml = imageUrl ? `<img src="${imageUrl}" class="notification-capa">` : '';
-    let btnHtml = showStopBtn ? `<button class="btn-stop-alerta" onclick="desligarAlerta(this)"><i class="fas fa-volume-mute"></i> Parar Som</button>` : '';
-    card.innerHTML = `${imgHtml}<h4>${title}</h4><p>${message}</p>${btnHtml}`;
+    card.className = 'notification';
+    card.innerHTML = `<h4>${title}</h4><p>Agendado para ${time}</p>`;
     notificationArea.prepend(card);
-    return card;
 }
 
-document.getElementById('open-menu').addEventListener('click', () => sideMenu.classList.add('active'));
-document.getElementById('close-menu').addEventListener('click', () => sideMenu.classList.remove('active'));
+document.getElementById('open-menu').onclick = () => sideMenu.classList.add('active');
+document.getElementById('close-menu').onclick = () => sideMenu.classList.remove('active');
 
-document.getElementById('save-event').addEventListener('click', () => {
+document.getElementById('save-event').onclick = () => {
     const title = document.getElementById('event-title').value;
+    const time = document.getElementById('event-time').value;
     const desc = document.getElementById('event-desc').value;
     const date = document.getElementById('event-date').value;
-    const time = document.getElementById('event-time').value;
     const soundFile = document.getElementById('event-sound').files[0];
     const imageFile = document.getElementById('event-image').files[0];
     const days = Array.from(document.querySelectorAll('.days-selector input:checked')).map(cb => parseInt(cb.value));
 
     if (title && time) {
-        const soundUrl = soundFile ? URL.createObjectURL(soundFile) : null;
-        const imageUrl = imageFile ? URL.createObjectURL(imageFile) : null;
+        const imageUrl = imageFile ? URL.createObjectURL(imageFile) : '';
+        const soundUrl = soundFile ? URL.createObjectURL(soundFile) : '';
         
-        agendamentosAtivos.push({ title, desc, date, time, days, soundUrl, imageUrl, tocadoHoje: false });
+        agendamentosAtivos.push({ title, time, desc, date, days, imageUrl, soundUrl, tocadoHoje: false });
         salvarDados();
-        sendNotify('success', 'Agendado!', `"${title}" salvo.`);
+        sendNotify(title, time);
         sideMenu.classList.remove('active');
-        document.getElementById('event-title').value = '';
-        document.getElementById('event-desc').value = '';
     }
-});
+};
 
 setInterval(() => {
     const agora = new Date();
-    const dia = agora.getDay();
-    const dataH = agora.toISOString().split('T')[0];
     const hora = `${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`;
+    const dia = agora.getDay();
 
     agendamentosAtivos.forEach(ev => {
-        const eDia = ev.days.length > 0 ? ev.days.includes(dia) : (ev.date === dataH);
+        const eDia = ev.days.length > 0 ? ev.days.includes(dia) : true;
         if (eDia && ev.time === hora && !ev.tocadoHoje) {
             ev.tocadoHoje = true;
             
-            // Criar e aplicar destaque (Zoom)
-            const novoCard = sendNotify('success', `⏰ AGORA: ${ev.title}`, ev.desc, ev.imageUrl, true);
-            novoCard.classList.add('playing');
-            overlayBg.style.display = 'block';
+            const frame = document.getElementById('central-alert-frame');
+            document.getElementById('central-alert-image').src = ev.imageUrl;
+            document.getElementById('central-alert-text').innerHTML = `<h3>${ev.title}</h3><p>${ev.desc}</p>`;
+            frame.classList.remove('hidden');
 
             if (ev.soundUrl) {
-                if(somAtivo) desligarAlerta();
-                somAtivo = new Audio(ev.soundUrl); somAtivo.loop = true; somAtivo.play();
+                somAtivo = new Audio(ev.soundUrl);
+                somAtivo.loop = true;
+                somAtivo.play();
                 quickStopBtn.classList.add('stop-btn-active');
-                
-                // Desliga automático após 15 minutos
-                setTimeout(() => desligarAlerta(), 900000); 
             }
         }
         if (hora === "00:00") ev.tocadoHoje = false;
     });
 }, 1000);
 
-document.getElementById('clear-all').addEventListener('click', () => { agendamentosAtivos = []; localStorage.removeItem('jesus_reina_vFinal_Destaque'); notificationArea.innerHTML = ''; });
+document.getElementById('central-stop-btn').onclick = desligarAlerta;
+document.getElementById('clear-all').onclick = () => { agendamentosAtivos = []; salvarDados(); notificationArea.innerHTML = ''; };
 window.onload = carregarDados;
