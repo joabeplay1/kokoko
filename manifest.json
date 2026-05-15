@@ -1,0 +1,22 @@
+{
+  "nav_background_color": "#050505",
+  "background_color": "#050505",
+  "theme_color": "#00d2ff",
+  "description": "Aplicativo Premium de Agendamentos e Notificações - Jesus Reina",
+  "display": "standalone",
+  "name": "Jesus Reina - Suíte Premium",
+  "short_name": "Jesus Reina",
+  "start_url": "index.html",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3602/3602149.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3602/3602149.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
