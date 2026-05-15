@@ -1,30 +1,33 @@
 const notificationArea = document.getElementById('notification-area');
 const sideMenu = document.getElementById('side-menu');
 const agendamentosAtivos = [];
-let audioAtual = null;
+let somAtivo = null;
 
-// Parar Som Globalmente
-function stopNotificationSound() {
-    if (audioAtual) {
-        audioAtual.pause();
-        audioAtual.currentTime = 0;
-        audioAtual = null;
+// Função para Desligar o Som
+function desligarAlerta(botao) {
+    if (somAtivo) {
+        somAtivo.pause();
+        somAtivo.currentTime = 0;
+        somAtivo = null;
+    }
+    if(botao) {
+        botao.innerHTML = '<i class="fas fa-check"></i> Alerta Silenciado';
+        botao.style.background = "rgba(255,255,255,0.1)";
+        botao.disabled = true;
     }
 }
 
 // Exibir Notificação na Tela
-function sendNotify(type, title, message, showStopBtn = false) {
+function sendNotify(type, title, message, imageUrl = null, showStopBtn = false) {
     const card = document.createElement('div');
     card.className = `notification ${type}`;
     
-    let btnHtml = '';
-    if(showStopBtn) {
-        btnHtml = `<button class="btn-stop-audio" onclick="stopNotificationSound(); this.parentElement.remove()">
-                    <i class="fas fa-stop"></i> Parar Alerta
-                   </button>`;
-    }
+    let imgHtml = imageUrl ? `<img src="${imageUrl}" class="notification-capa">` : '';
+    let btnHtml = showStopBtn ? `<button class="btn-stop-alerta" onclick="desligarAlerta(this)">
+                                <i class="fas fa-volume-mute"></i> Desligar Som
+                               </button>` : '';
 
-    card.innerHTML = `<h4>${title}</h4><p>${message}</p>${btnHtml}`;
+    card.innerHTML = `${imgHtml}<h4>${title}</h4><p>${message}</p>${btnHtml}`;
     notificationArea.prepend(card);
 }
 
@@ -40,27 +43,30 @@ document.getElementById('save-event').addEventListener('click', () => {
     const time = document.getElementById('event-time').value;
     const cat = document.getElementById('event-category').value;
     const soundFile = document.getElementById('event-sound').files[0];
+    const imageFile = document.getElementById('event-image').files[0];
     
-    // Pega dias selecionados
     const selectedDays = Array.from(document.querySelectorAll('.days-selector input:checked')).map(cb => parseInt(cb.value));
 
     if (title && time) {
-        let soundUrl = soundFile ? URL.createObjectURL(soundFile) : null;
+        const soundUrl = soundFile ? URL.createObjectURL(soundFile) : null;
+        const imageUrl = imageFile ? URL.createObjectURL(imageFile) : null;
 
         agendamentosAtivos.push({
-            title, desc, date, time, cat, soundUrl, 
+            title, desc, date, time, cat, soundUrl, imageUrl,
             days: selectedDays,
             tocadoHoje: false
         });
 
-        sendNotify('info', 'Agendado com Sucesso', `O alerta "${title}" tocará às ${time}.`);
+        sendNotify('success', 'Agendado!', `Evento "${title}" configurado.`);
         
         sideMenu.classList.remove('active');
         // Reset campos
         document.getElementById('event-title').value = '';
         document.getElementById('event-desc').value = '';
+        document.getElementById('event-image').value = '';
+        document.getElementById('event-sound').value = '';
     } else {
-        alert("Preencha ao menos Título e Hora!");
+        alert("Preencha título e hora!");
     }
 });
 
@@ -72,28 +78,25 @@ setInterval(() => {
     const horaAgora = `${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`;
 
     agendamentosAtivos.forEach(evento => {
-        // Verifica se é dia de semana escolhido OU se é a data específica
         const eDiaDeTocar = evento.days.length > 0 ? evento.days.includes(diaSemana) : (evento.date === dataHoje);
 
         if (eDiaDeTocar && evento.time === horaAgora && !evento.tocadoHoje) {
             evento.tocadoHoje = true;
 
-            // Dispara visual com botão de parar
-            sendNotify(evento.cat, `⏰ ALERTA: ${evento.title}`, evento.desc, true);
+            // Dispara visual com imagem e botão
+            sendNotify(evento.cat, `⏰ AGORA: ${evento.title}`, evento.desc, evento.imageUrl, true);
 
-            // Toca o som
+            // Tocar Som
             if (evento.soundUrl) {
-                stopNotificationSound();
-                audioAtual = new Audio(evento.soundUrl);
-                audioAtual.loop = true;
-                audioAtual.play().catch(() => console.log("Clique na tela para habilitar áudio."));
+                if(somAtivo) desligarAlerta();
+                somAtivo = new Audio(evento.soundUrl);
+                somAtivo.loop = true;
+                somAtivo.play().catch(() => console.log("Interaja com a página."));
 
-                // Limite de 15 minutos
-                setTimeout(() => stopNotificationSound(), 900000);
+                // REGRA DE 15 MINUTOS (900.000 ms)
+                setTimeout(() => desligarAlerta(), 900000);
             }
         }
-
-        // Reseta gatilho meia-noite
         if (horaAgora === "00:00") evento.tocadoHoje = false;
     });
 }, 1000);
