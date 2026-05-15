@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notify Pro - Suíte Premium</title>
+    <title>Notify Pro - Ultra Futurista</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+
+    <canvas id="notification-canvas"></canvas>
 
     <div class="app-container">
         <div id="side-menu" class="side-menu">
@@ -19,20 +21,20 @@
                 
                 <div class="input-group">
                     <label>Título do Evento</label>
-                    <input type="text" id="event-title" placeholder="Ex: Aniversário do Joabe">
+                    <input type="text" id="event-title" placeholder="Ex: Notificação Importante">
                 </div>
 
                 <div class="input-group">
                     <label>Descrição</label>
-                    <textarea id="event-desc" placeholder="Detalhes ou lembretes..."></textarea>
+                    <textarea id="event-desc" placeholder="Detalhes do lembrete..."></textarea>
                 </div>
 
-                <div class="input-row">
-                    <div class="input-group">
+                <div class="input-row" style="display: flex; gap: 10px;">
+                    <div class="input-group" style="flex: 1;">
                         <label>Data Única</label>
                         <input type="date" id="event-date">
                     </div>
-                    <div class="input-group">
+                    <div class="input-group" style="flex: 1;">
                         <label>Hora</label>
                         <input type="time" id="event-time">
                     </div>
@@ -85,15 +87,18 @@
         <main id="notification-area">
             </main>
 
-        <button id="open-menu" class="fab-btn">
-            <i class="fas fa-plus"></i>
-        </button>
-
-        <footer class="controls">
-            <button onclick="sendNotify('success', 'Sistema', 'Monitoramento ativo.')" class="btn-action success">
-                <i class="fas fa-microchip"></i>
+        <div class="action-buttons">
+            <button id="quick-stop" class="stop-btn-modern" onclick="desligarAlerta(this)" title="Parar todos os sons">
+                <i class="fas fa-volume-slash"></i>
             </button>
-            <p>Aguardando eventos agendados...</p>
+
+            <button id="open-menu" class="fab-btn">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+
+        <footer>
+            <p>Monitoramento em Tempo Real Ativo</p>
         </footer>
     </div>
 
