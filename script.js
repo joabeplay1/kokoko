@@ -5,6 +5,34 @@ const overlayBg = document.getElementById('central-alert-frame');
 let agendamentosAtivos = [];
 let somAtivo = null;
 
+// ============================================================================
+// [NOVO CÓDIGO INSERIDO] - ATIVADOR E REGISTRO DO SERVICE WORKER EM SEGUNDO PLANO
+// ============================================================================
+let serviceWorkerReg = null;
+
+if ('serviceWorker' in navigator && 'Notification' in window) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(registration => {
+                serviceWorkerReg = registration;
+                console.log('Service Worker ativo com sucesso!');
+                
+                // Solicita a permissão oficial para notificações no sistema do computador
+                if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            console.log('Permissão concedida pelo usuário.');
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao registrar o Service Worker:', error);
+            });
+    });
+}
+// ============================================================================
+
 // ====== CANVAS DOS SININHOS ======
 const canvas = document.getElementById('notification-canvas');
 const ctx = canvas.getContext('2d');
@@ -33,7 +61,7 @@ function animateCanvasBells() {
 }
 initCanvasBells(); animateCanvasBells();
 
-// ====== LETREIROS BÍBLICOS NEON INTEGRADOS ======
+// ====== LETREIROS BÍBLICOS NEON INTEGRADOS COM AS 20 FRASES ======
 const listVersesNeon = [
     'AMAI-VOS UNS AOS OUTROS', 
     'EU SOU O CAMINHO', 
@@ -67,28 +95,25 @@ const listVersesNeon = [
 ];
 const neonColorsClasses = ['neon-cyan', 'neon-gold', 'neon-green', 'neon-purple'];
 
-// FUNÇÃO DE RENDERIZAÇÃO INTELIGENTE CONTRA SOBREPOSIÇÃO E CORTE
 function spawnNeonVerse() {
     const container = document.querySelector('.dynamic-verses-container');
     if (!container) return;
 
-    // Proteção de sobreposição: Impede novos spawns se já existirem muitas partículas ativas ao mesmo tempo
-    if (container.children.length > 5) return;
+    if (container.children.length > 5) return; // Evita acúmulo e sobreposições
 
     const span = document.createElement('span');
     const randomColor = neonColorsClasses[Math.floor(Math.random() * neonColorsClasses.length)];
     span.className = `dynamic-verse-particle ${randomColor}`;
     span.innerText = listVersesNeon[Math.floor(Math.random() * listVersesNeon.length)];
     
-    // Alinhamento horizontal seguro: Nasce entre 5% e 48% da largura da tela.
-    // Assim, restam mais de 50% de espaço livre à direita para que o versículo apareça por inteiro sem ser cortado.
+    // Alinhamento inteligente (entre 5% e 48% da largura da tela)
     span.style.left = `${Math.random() * 43 + 5}vw`;
     
     span.style.animationDuration = `${Math.random() * 4 + 14}s`;
     container.appendChild(span);
     setTimeout(() => span.remove(), 18000);
 }
-setInterval(spawnNeonVerse, 3200); // Intervalo suavizado para evitar choque de frases
+setInterval(spawnNeonVerse, 3200);
 
 // ====== MEMÓRIA (LOCAL STORAGE) ======
 function salvarDados() { localStorage.setItem('jesus_reina_vFinal_Neon_Fix', JSON.stringify(agendamentosAtivos)); }
@@ -153,6 +178,18 @@ setInterval(() => {
             document.getElementById('central-alert-image').src = ev.imageUrl ? ev.imageUrl : '';
             document.getElementById('central-alert-text').innerHTML = `<h3>⏰ ${ev.title}</h3><p>${ev.desc}</p>`;
             overlayBg.classList.remove('hidden');
+
+            // ============================================================================
+            // [NOVO CÓDIGO INSERIDO] - DISPARA O ALERTA DIRETAMENTE PARA O WINDOWS / SISTEMA OPERACIONAL
+            // ============================================================================
+            if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'DISPARAR_ALERTA',
+                    title: `⏰ JESUS REINA: ${ev.title}`,
+                    desc: ev.desc
+                });
+            }
+            // ============================================================================
 
             if (ev.soundUrl) {
                 if (somAtivo) desligarAlerta();
