@@ -1,235 +1,88 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>SPACE CAT GALAXY 🐱🌌</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { width: 100vw; height: 100vh; overflow: hidden; background: #02040a; font-family: 'Orbitron', sans-serif; }
-  
-  #hud {
-    position: fixed; top: 20px; width: 100%; display: flex; justify-content: center;
-    z-index: 10; pointer-events: none;
-  }
-  .score-box {
-    background: rgba(5, 10, 25, 0.7); padding: 15px 40px; border-radius: 15px;
-    border: 1px solid rgba(0, 242, 255, 0.3); display: flex; gap: 30px; align-items: center;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px);
-  }
-  .score { font-size: 40px; color: #fff; text-shadow: 0 0 15px #00f2ff; }
-  
-  #menu {
-    position: fixed; inset: 0; background: radial-gradient(circle, #0a1228 0%, #02040a 100%);
-    display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100;
-  }
-  .btn {
-    padding: 20px 40px; font-family: inherit; font-size: 22px; cursor: pointer;
-    background: transparent; color: #00f2ff; border: 2px solid #00f2ff;
-    border-radius: 12px; transition: 0.3s; margin-top: 25px;
-  }
-  .btn:hover { background: #00f2ff; color: #000; box-shadow: 0 0 40px #00f2ff; transform: scale(1.05); }
-  
-  canvas { display: block; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notify Pro - Suíte Premium</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-<div id="menu">
-  <h1 style="color: #fff; font-size: clamp(40px, 8vw, 70px); text-align: center;">
-    SPACE CAT<br><span style="color: #b200ff;">GALAXY</span>
-  </h1>
-  <button class="btn" onclick="startGame()">INICIAR VIAGEM</button>
-</div>
+    <div class="app-container">
+        <!-- Menu Lateral de Cadastro -->
+        <div id="side-menu" class="side-menu">
+            <div class="menu-content">
+                <div class="menu-header">
+                    <h3>Agendar Evento</h3>
+                    <button id="close-menu"><i class="fas fa-times"></i></button>
+                </div>
+                
+                <div class="input-group">
+                    <label>Título do Evento</label>
+                    <input type="text" id="event-title" placeholder="Ex: Aniversário do Joabe">
+                </div>
 
-<div id="hud" style="display:none">
-  <div class="score-box">
-    <div id="p1-score" class="score">0</div>
-    <div style="color: #666; font-size: 18px;">X</div>
-    <div id="p2-score" class="score">0</div>
-  </div>
-</div>
+                <div class="input-group">
+                    <label>Descrição</label>
+                    <textarea id="event-desc" placeholder="Detalhes ou lembretes..."></textarea>
+                </div>
 
-<canvas id="gameCanvas"></canvas>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Data</label>
+                        <input type="date" id="event-date">
+                    </div>
+                    <div class="input-group">
+                        <label>Hora</label>
+                        <input type="time" id="event-time">
+                    </div>
+                </div>
 
-<script>
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+                <div class="input-group">
+                    <label>Categoria</label>
+                    <select id="event-category">
+                        <option value="success">🎉 Festa / Evento</option>
+                        <option value="warning">🎂 Aniversário</option>
+                        <option value="error">⚠️ Urgente</option>
+                    </select>
+                </div>
 
-let gameRunning = false;
-let p1Score = 0, p2Score = 0;
+                <!-- Novo campo de Som -->
+                <div class="input-group">
+                    <label><i class="fas fa-music"></i> Som do Alerta (.mp3)</label>
+                    <input type="file" id="event-sound" accept="audio/*">
+                </div>
 
-const paddleW = 35, paddleH = 110;
-const goalSize = 220; 
-const player = { x: 70, y: 0, color: '#00f2ff' };
-const ai = { x: 0, y: 0, color: '#b200ff' };
-const ball = { x: 0, y: 0, vx: 8, vy: 8 };
+                <button id="save-event" class="btn-save">Agendar Agora</button>
+            </div>
+        </div>
 
-let stars = [];
-let galaxyParticles = [];
+        <header>
+            <div class="logo">
+                <i class="fas fa-bell"></i>
+                <span>Notify<span>Pro</span></span>
+            </div>
+            <button id="clear-all" class="btn-secondary">Limpar Painel</button>
+        </header>
 
-function init() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  player.y = canvas.height / 2 - paddleH / 2;
-  ai.y = canvas.height / 2 - paddleH / 2;
-  ai.x = canvas.width - 70 - paddleW;
-  
-  // Estrelas de fundo
-  stars = [];
-  for(let i=0; i<150; i++) {
-    stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, s: Math.random()*2, o: Math.random() });
-  }
+        <main id="notification-area">
+            <!-- As notificações aparecerão aqui -->
+        </main>
 
-  // Partículas da Galáxia (Espiral realística)
-  galaxyParticles = [];
-  for(let i=0; i<400; i++) {
-    galaxyParticles.push({
-      angle: Math.random() * Math.PI * 2,
-      distance: Math.random() * 150,
-      speed: 0.005 + Math.random() * 0.01,
-      size: Math.random() * 2.5,
-      color: i % 3 === 0 ? '#b200ff' : (i % 3 === 1 ? '#00f2ff' : '#ffffff')
-    });
-  }
-  resetBall();
-}
+        <!-- Botão Flutuante "+" -->
+        <button id="open-menu" class="fab-btn">
+            <i class="fas fa-plus"></i>
+        </button>
 
-function resetBall() {
-  ball.x = canvas.width / 2;
-  ball.y = canvas.height / 2;
-  ball.vx = 8 * (Math.random() > 0.5 ? 1 : -1);
-  ball.vy = 6 * (Math.random() > 0.5 ? 1 : -1);
-}
+        <footer class="controls">
+            <button onclick="sendNotify('success', 'Sistema', 'Monitoramento ativo.')" class="btn-action success">
+                <i class="fas fa-microchip"></i>
+            </button>
+            <p>Aguardando eventos agendados...</p>
+        </footer>
+    </div>
 
-function drawGalaxy() {
-  ctx.save();
-  ctx.translate(canvas.width / 2, canvas.height / 2);
-  
-  // Núcleo brilhante (sem linhas)
-  const core = ctx.createRadialGradient(0, 0, 0, 0, 0, 60);
-  core.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
-  core.addColorStop(0.3, 'rgba(0, 242, 255, 0.4)');
-  core.addColorStop(1, 'rgba(0, 0, 0, 0)');
-  ctx.fillStyle = core;
-  ctx.beginPath(); ctx.arc(0, 0, 60, 0, Math.PI*2); ctx.fill();
-
-  // Partículas girando em espiral
-  galaxyParticles.forEach((p, i) => {
-    p.angle += p.speed;
-    const spiral = p.distance + (p.angle * 5); // Cria o efeito de braços da galáxia
-    const x = Math.cos(p.angle) * p.distance;
-    const y = Math.sin(p.angle) * (p.distance * 0.5); // Inclinação 3D
-    
-    ctx.fillStyle = p.color;
-    ctx.globalAlpha = 0.6;
-    ctx.beginPath();
-    ctx.arc(x, y, p.size, 0, Math.PI * 2);
-    ctx.fill();
-  });
-  ctx.restore();
-  ctx.globalAlpha = 1.0;
-}
-
-function drawCat(x, y, color) {
-  ctx.save();
-  ctx.shadowBlur = 20; ctx.shadowColor = color;
-  ctx.fillStyle = color;
-  // Corpo
-  ctx.beginPath(); ctx.roundRect(x, y, paddleW, paddleH, 18); ctx.fill();
-  // Orelhas
-  ctx.beginPath();
-  ctx.moveTo(x+5, y); ctx.lineTo(x+12, y-12); ctx.lineTo(x+20, y); ctx.fill();
-  ctx.moveTo(x+paddleW-5, y); ctx.lineTo(x+paddleW-12, y-12); ctx.lineTo(x+paddleW-20, y); ctx.fill();
-  // Olhos
-  ctx.fillStyle = 'rgba(0,0,0,0.6)';
-  ctx.beginPath(); ctx.arc(x+10, y+25, 3.5, 0, Math.PI*2); ctx.arc(x+paddleW-10, y+25, 3.5, 0, Math.PI*2); ctx.fill();
-  ctx.restore();
-}
-
-function drawBall() {
-  ctx.save();
-  ctx.shadowBlur = 20; ctx.shadowColor = '#00f2ff';
-  // Estrela
-  let rot = Math.PI / 2 * 3; let step = Math.PI / 5;
-  ctx.beginPath(); ctx.moveTo(ball.x, ball.y - 18);
-  for (let i = 0; i < 5; i++) {
-    ctx.lineTo(ball.x + Math.cos(rot)*18, ball.y + Math.sin(rot)*18); rot += step;
-    ctx.lineTo(ball.x + Math.cos(rot)*8, ball.y + Math.sin(rot)*8); rot += step;
-  }
-  ctx.fillStyle = "#fff"; ctx.fill();
-  ctx.restore();
-}
-
-function update() {
-  if (!gameRunning) return;
-  ball.x += ball.vx; ball.y += ball.vy;
-
-  if (ball.y < 0 || ball.y > canvas.height) ball.vy *= -1;
-
-  const goalT = (canvas.height/2) - (goalSize/2);
-  const goalB = (canvas.height/2) + (goalSize/2);
-
-  if (ball.x < 20) {
-    if (ball.y > goalT && ball.y < goalB) { p2Score++; resetBall(); }
-    else { ball.vx *= -1; ball.x = 20; }
-  }
-  if (ball.x > canvas.width - 20) {
-    if (ball.y > goalT && ball.y < goalB) { p1Score++; resetBall(); }
-    else { ball.vx *= -1; ball.x = canvas.width - 20; }
-  }
-
-  // Colisão Raquetes
-  if (ball.vx < 0 && ball.x < player.x + paddleW && ball.y > player.y && ball.y < player.y + paddleH) {
-    ball.vx *= -1.1; ball.x = player.x + paddleW;
-  }
-  if (ball.vx > 0 && ball.x > ai.x && ball.y > ai.y && ball.y < ai.y + paddleH) {
-    ball.vx *= -1.1; ball.x = ai.x;
-  }
-
-  // IA
-  const aiC = ai.y + (paddleH / 2);
-  if (aiC < ball.y - 30) ai.y += 7; else if (aiC > ball.y + 30) ai.y -= 7;
-
-  document.getElementById('p1-score').innerText = p1Score;
-  document.getElementById('p2-score').innerText = p2Score;
-}
-
-function draw() {
-  ctx.fillStyle = '#02040a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
-  // Estrelas de fundo
-  stars.forEach(s => { ctx.fillStyle = `rgba(255,255,255,${s.o})`; ctx.fillRect(s.x, s.y, s.s, s.s); });
-
-  drawGalaxy();
-
-  // Gols Laterais (Linhas finas apenas onde rebate)
-  ctx.lineWidth = 4;
-  const goalT = (canvas.height/2) - (goalSize/2);
-  const goalB = (canvas.height/2) + (goalSize/2);
-  ctx.strokeStyle = '#00f2ff';
-  ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(10, goalT); ctx.moveTo(10, goalB); ctx.lineTo(10, canvas.height); ctx.stroke();
-  ctx.strokeStyle = '#b200ff';
-  ctx.beginPath(); ctx.moveTo(canvas.width-10, 0); ctx.lineTo(canvas.width-10, goalT); ctx.moveTo(canvas.width-10, goalB); ctx.lineTo(canvas.width-10, canvas.height); ctx.stroke();
-
-  drawCat(player.x, player.y, player.color);
-  drawCat(ai.x, ai.y, ai.color);
-  drawBall();
-
-  update();
-  requestAnimationFrame(draw);
-}
-
-function startGame() {
-  document.getElementById('menu').style.display = 'none';
-  document.getElementById('hud').style.display = 'flex';
-  gameRunning = true; init(); draw();
-}
-
-window.addEventListener('mousemove', (e) => { player.y = e.clientY - (paddleH / 2); });
-window.addEventListener('touchmove', (e) => { e.preventDefault(); player.y = e.touches[0].clientY - (paddleH / 2); }, {passive: false});
-window.addEventListener('resize', init);
-</script>
+    <script src="script.js"></script>
 </body>
 </html>
