@@ -10,7 +10,6 @@
 <body>
 
     <div class="app-container">
-        <!-- Menu Lateral de Cadastro -->
         <div id="side-menu" class="side-menu">
             <div class="menu-content">
                 <div class="menu-header">
@@ -30,12 +29,25 @@
 
                 <div class="input-row">
                     <div class="input-group">
-                        <label>Data</label>
+                        <label>Data Única</label>
                         <input type="date" id="event-date">
                     </div>
                     <div class="input-group">
                         <label>Hora</label>
                         <input type="time" id="event-time">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fas fa-calendar-alt"></i> Repetir nos Dias:</label>
+                    <div class="days-selector">
+                        <label class="day-check"><input type="checkbox" value="0"> Dom</label>
+                        <label class="day-check"><input type="checkbox" value="1"> Seg</label>
+                        <label class="day-check"><input type="checkbox" value="2"> Ter</label>
+                        <label class="day-check"><input type="checkbox" value="3"> Qua</label>
+                        <label class="day-check"><input type="checkbox" value="4"> Qui</label>
+                        <label class="day-check"><input type="checkbox" value="5"> Sex</label>
+                        <label class="day-check"><input type="checkbox" value="6"> Sáb</label>
                     </div>
                 </div>
 
@@ -48,7 +60,6 @@
                     </select>
                 </div>
 
-                <!-- Novo campo de Som -->
                 <div class="input-group">
                     <label><i class="fas fa-music"></i> Som do Alerta (.mp3)</label>
                     <input type="file" id="event-sound" accept="audio/*">
@@ -67,10 +78,8 @@
         </header>
 
         <main id="notification-area">
-            <!-- As notificações aparecerão aqui -->
-        </main>
+            </main>
 
-        <!-- Botão Flutuante "+" -->
         <button id="open-menu" class="fab-btn">
             <i class="fas fa-plus"></i>
         </button>
