@@ -1,26 +1,56 @@
-// sw.js - Este arquivo roda escondido em segundo plano no seu computador
+const CACHE_NAME = 'jesus-reina-cache-v1';
+const assets = [
+  './',
+  './index.html',
+  './style.css',
+  './script.js',
+  './manifest.json',
+  './icone-jesus-reina.png'
+];
+
+// Instala e força o armazenamento dos arquivos principais para o app rodar offline
 self.addEventListener('install', (event) => {
-    self.skipWaiting();
+    event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.addAll(assets);
+        }).then(() => self.skipWaiting())
+    );
 });
 
 self.addEventListener('activate', (event) => {
-    event.waitUntil(self.clients.claim());
+    event.waitUntil(
+        caches.keys().then((keys) => {
+            return Promise.all(
+                keys.map((key) => {
+                    if (key !== CACHE_NAME) {
+                        return caches.delete(key);
+                    }
+                })
+            );
+        }).then(() => self.clients.claim())
+    );
 });
 
-// Escuta as ordens enviadas pelo script.js para disparar a notificação no Windows
+// Responde às requisições do app e gerencia as notificações do sistema
+self.addEventListener('fetch', (event) => {
+    event.respondWith(
+        caches.match(event.request).then((cachedResponse) => {
+            return cachedResponse || fetch(event.request);
+        })
+    );
+});
+
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'DISPARAR_ALERTA') {
         const title = event.data.title;
         const options = {
             body: event.data.desc || 'Lembrete do aplicativo Jesus Reina',
-            icon: 'https://cdn-icons-png.flaticon.com/512/3602/3602149.png', // Ícone padrão de sino
-            badge: 'https://cdn-icons-png.flaticon.com/512/3602/3602149.png',
-            tag: 'jesus-reina-alerta', // Evita acumular notificações repetidas
-            requireInteraction: true, // Faz a notificação ficar travada na tela até você clicar
-            silent: false // Permite que o Windows emita o som padrão dele
+            icon: 'icone-jesus-reina.png',
+            badge: 'icone-jesus-reina.png',
+            tag: 'jesus-reina-alerta',
+            requireInteraction: true,
+            silent: false
         };
-
-        // Faz o banner pular oficialmente na tela do sistema operacional
         self.registration.showNotification(title, options);
     }
 });
