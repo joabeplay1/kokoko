@@ -13,11 +13,14 @@ if ('serviceWorker' in navigator && 'Notification' in window) {
         navigator.serviceWorker.register('sw.js')
             .then(registration => {
                 serviceWorkerReg = registration;
-                registration.update(); 
-                console.log('Service Worker ativo e pronto para instalação!');
+                console.log('Service Worker ativo com sucesso!');
                 
                 if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
-                    Notification.requestPermission();
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            console.log('Permissão de notificações concedida.');
+                        }
+                    });
                 }
             })
             .catch(error => {
@@ -32,11 +35,11 @@ let eventoInstalacao = null;
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     eventoInstalacao = e;
-    console.log('Botão de instalação liberado pelo navegador!');
+    console.log('Jesus Reina pronto para ser instalado no sistema!');
 });
 
 window.addEventListener('appinstalled', () => {
-    console.log('Aplicativo Jesus Reina instalado com sucesso!');
+    console.log('Obrigado por instalar o Jesus Reina!');
     eventoInstalacao = null;
 });
 
@@ -89,6 +92,7 @@ const neonColorsClasses = ['neon-cyan', 'neon-gold', 'neon-green', 'neon-purple'
 function spawnNeonVerse() {
     const container = document.querySelector('.dynamic-verses-container');
     if (!container) return;
+
     if (container.children.length > 5) return;
 
     const span = document.createElement('span');
@@ -167,6 +171,7 @@ setInterval(() => {
             document.getElementById('central-alert-text').innerHTML = `<h3>⏰ ${ev.title}</h3><p>${ev.desc}</p>`;
             overlayBg.classList.remove('hidden');
 
+            // DISPARO DE SINAL PARA NOTIFICAÇÃO NATIVA DO PC
             if (navigator.serviceWorker && navigator.serviceWorker.controller) {
                 navigator.serviceWorker.controller.postMessage({
                     type: 'DISPARAR_ALERTA',
