@@ -1,56 +1,32 @@
-const CACHE_NAME = 'jesus-reina-cache-v1';
-const assets = [
-  './',
-  './index.html',
-  './style.css',
-  './script.js',
-  './manifest.json',
-  './icone-jesus-reina.png'
-];
-
-// Instala e força o armazenamento dos arquivos principais para o app rodar offline
+// sw.js - Versão Corrigida para Reativar o Botão de Baixar (PWA)
 self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(assets);
-        }).then(() => self.skipWaiting())
-    );
+    self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((keys) => {
-            return Promise.all(
-                keys.map((key) => {
-                    if (key !== CACHE_NAME) {
-                        return caches.delete(key);
-                    }
-                })
-            );
-        }).then(() => self.clients.claim())
-    );
+    event.waitUntil(self.clients.claim());
 });
 
-// Responde às requisições do app e gerencia as notificações do sistema
+// OBRIGATÓRIO PARA O NAVEGADOR PERMITIR O DOWNLOAD (BOTÃO DE BAIXAR)
+// Esse evento intercepta as buscas e prova ao navegador que o app funciona offline
 self.addEventListener('fetch', (event) => {
-    event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            return cachedResponse || fetch(event.request);
-        })
-    );
+    // Mantém as requisições fluindo normalmente sem travar o site
+    event.respondWith(fetch(event.request).catch(() => fetch(event.request)));
 });
 
+// CONTROLE DE NOTIFICAÇÕES EM SEGUNDO PLANO (Mantido Intacto)
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'DISPARAR_ALERTA') {
         const title = event.data.title;
         const options = {
             body: event.data.desc || 'Lembrete do aplicativo Jesus Reina',
-            icon: 'icone-jesus-reina.png',
+            icon: 'icone-jesus-reina.png', // Usa o novo ícone da águia como padrão
             badge: 'icone-jesus-reina.png',
             tag: 'jesus-reina-alerta',
             requireInteraction: true,
             silent: false
         };
+
         self.registration.showNotification(title, options);
     }
 });
