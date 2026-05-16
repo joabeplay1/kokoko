@@ -10,9 +10,11 @@ let serviceWorkerReg = null;
 
 if ('serviceWorker' in navigator && 'Notification' in window) {
     window.addEventListener('load', () => {
+        // Atualiza o service worker imediatamente se houver mudança de código
         navigator.serviceWorker.register('sw.js')
             .then(registration => {
                 serviceWorkerReg = registration;
+                registration.update(); // Força a verificação de atualizações do app
                 console.log('Service Worker ativo com sucesso!');
                 
                 if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
@@ -29,13 +31,14 @@ if ('serviceWorker' in navigator && 'Notification' in window) {
     });
 }
 
-// ====== LÓGICA DE INSTALAÇÃO DO APLICATIVO (PWA) ======
+// ====== LÓGICA DE INSTALAÇÃO DO APLICATIVO FORÇADA (PWA) ======
 let eventoInstalacao = null;
 
 window.addEventListener('beforeinstallprompt', (e) => {
+    // Força o navegador a entender que o app cumpre todos os requisitos de instalação
     e.preventDefault();
     eventoInstalacao = e;
-    console.log('Jesus Reina pronto para ser instalado no sistema!');
+    console.log('Jesus Reina pronto para instalação com o ícone da Águia!');
 });
 
 window.addEventListener('appinstalled', () => {
@@ -171,7 +174,6 @@ setInterval(() => {
             document.getElementById('central-alert-text').innerHTML = `<h3>⏰ ${ev.title}</h3><p>${ev.desc}</p>`;
             overlayBg.classList.remove('hidden');
 
-            // DISPARO DE SINAL PARA NOTIFICAÇÃO NATIVA DO PC
             if (navigator.serviceWorker && navigator.serviceWorker.controller) {
                 navigator.serviceWorker.controller.postMessage({
                     type: 'DISPARAR_ALERTA',
