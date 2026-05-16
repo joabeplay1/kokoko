@@ -10,19 +10,14 @@ let serviceWorkerReg = null;
 
 if ('serviceWorker' in navigator && 'Notification' in window) {
     window.addEventListener('load', () => {
-        // Atualiza o service worker imediatamente se houver mudança de código
         navigator.serviceWorker.register('sw.js')
             .then(registration => {
                 serviceWorkerReg = registration;
-                registration.update(); // Força a verificação de atualizações do app
-                console.log('Service Worker ativo com sucesso!');
+                registration.update(); 
+                console.log('Service Worker ativo e pronto para instalação!');
                 
                 if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
-                    Notification.requestPermission().then(permission => {
-                        if (permission === 'granted') {
-                            console.log('Permissão de notificações concedida.');
-                        }
-                    });
+                    Notification.requestPermission();
                 }
             })
             .catch(error => {
@@ -31,18 +26,17 @@ if ('serviceWorker' in navigator && 'Notification' in window) {
     });
 }
 
-// ====== LÓGICA DE INSTALAÇÃO DO APLICATIVO FORÇADA (PWA) ======
+// ====== LÓGICA DE INSTALAÇÃO DO APLICATIVO (PWA) ======
 let eventoInstalacao = null;
 
 window.addEventListener('beforeinstallprompt', (e) => {
-    // Força o navegador a entender que o app cumpre todos os requisitos de instalação
     e.preventDefault();
     eventoInstalacao = e;
-    console.log('Jesus Reina pronto para instalação com o ícone da Águia!');
+    console.log('Botão de instalação liberado pelo navegador!');
 });
 
 window.addEventListener('appinstalled', () => {
-    console.log('Obrigado por instalar o Jesus Reina!');
+    console.log('Aplicativo Jesus Reina instalado com sucesso!');
     eventoInstalacao = null;
 });
 
@@ -95,7 +89,6 @@ const neonColorsClasses = ['neon-cyan', 'neon-gold', 'neon-green', 'neon-purple'
 function spawnNeonVerse() {
     const container = document.querySelector('.dynamic-verses-container');
     if (!container) return;
-
     if (container.children.length > 5) return;
 
     const span = document.createElement('span');
